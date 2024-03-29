@@ -18,13 +18,13 @@ public class UserRepoImpl implements UserRepo {
 
     public User findById(int userId) throws Exception {
         List<User> users = findAll();
+        User user = null;
         for (User user1 :users) {
             if (userId  == user1.getId()){
-                return user1;
-            }else {
-                throw new Exception("User not found");
+                user = user1;
             }
-        }return null;
+        }
+        return user;
     }
 
     @Override

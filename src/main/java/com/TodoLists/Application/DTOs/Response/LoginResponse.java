@@ -9,4 +9,5 @@ public class LoginResponse {
 private int id;
 private String message;
 private boolean loginStatus;
+private String username;
 }

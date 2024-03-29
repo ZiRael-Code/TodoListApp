@@ -23,8 +23,8 @@ UserServiceImpl userService;
         AddTaskRequest newTask = new AddTaskRequest();
         newTask.setTitle("Test Task");
         newTask.setDescription("Still need to do html");
-        newTask.setPriority(Priority.MEDIUM);
-        newTask.setDueDate(LocalDate.now());
+        newTask.setPriority(String.valueOf(Priority.MEDIUM));
+        newTask.setDueDate(String.valueOf(LocalDate.now()));
         newTask.setUserId(2);
 
         LoginRequest loginRequest = new LoginRequest();

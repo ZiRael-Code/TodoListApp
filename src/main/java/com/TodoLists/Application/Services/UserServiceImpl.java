@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserServiceRepo {
             loginResponse.setId(user1.getId());
             loginResponse.setMessage("Login Successful");
             loginResponse.setLoginStatus(user1.isEnable());
+            loginResponse.setUsername(user1.getUsername());
             return loginResponse;
         }else {
             throw new RuntimeException("User name or password not correct");

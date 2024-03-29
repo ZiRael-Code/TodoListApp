@@ -37,13 +37,14 @@ public class ToDoItem implements Serializable {
 
 
     private Priority priority;
-    private boolean completed;
+    private boolean completed = false;
+    private String taskName;
+    private TaskType taskType;
     private int userId;
 
 
     public ToDoItem(){
         this.createdDate = LocalDateTime.now();
     }
-
 
 }

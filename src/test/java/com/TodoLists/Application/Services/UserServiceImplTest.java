@@ -41,10 +41,10 @@ class UserServiceImplTest {
         createUserRequest.setPassword("hello123");
         userService.createAccount(createUserRequest);
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername("hello");
-        loginRequest.setPassword("hello123");
-        userService.logIn(loginRequest);
-        assertTrue(userRepo.findByUsername(createUserRequest.getUsername()).isEnable());
+        loginRequest.setUsername("betty");
+        loginRequest.setPassword("hi");
+        ;
+        assertTrue(userService.logIn(loginRequest).isLoginStatus());
     }
 
     @Test

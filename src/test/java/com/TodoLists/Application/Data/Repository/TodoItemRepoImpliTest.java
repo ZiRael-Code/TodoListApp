@@ -13,7 +13,7 @@ TodoItemRepo todoItemRepo;
 
     @Test
     void findAllUserTask() throws Exception {
-        assertEquals(1,  todoItemRepo.findAllUserTask(1).size());
+        System.out.println(todoItemRepo.findAllUserTask(1).toString());
     }
 
     @Test

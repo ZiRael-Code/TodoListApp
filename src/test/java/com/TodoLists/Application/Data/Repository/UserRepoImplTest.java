@@ -83,7 +83,10 @@ class UserRepoImplTest {
     }
 
 
-
+@Test
+void findByIf() throws Exception {
+    System.out.println(userRepo.findById(2));
+}
     @Test
     void findAll(){
         assertEquals(0, userRepo.findAll().size());

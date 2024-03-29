@@ -10,8 +10,9 @@ public class AddTaskRequest {
     private int userId;
     private String title;
     private String description;
-    private LocalDate dueDate;
-    private Priority priority;
+    private String dueDate;
+    private String priority;
+    private String taskType;
 
 
 }

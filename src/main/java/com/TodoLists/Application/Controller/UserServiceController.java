@@ -1,11 +1,9 @@
 package com.TodoLists.Application.Controller;
 
-import com.TodoLists.Application.DTOs.Request.AddTaskRequest;
-import com.TodoLists.Application.DTOs.Request.CreateUserRequest;
-import com.TodoLists.Application.DTOs.Request.LoginRequest;
+import com.TodoLists.Application.DTOs.Request.*;
+import com.TodoLists.Application.DTOs.Response.FindTasksResponse;
 import com.TodoLists.Application.DTOs.Response.LoginResponse;
 import com.TodoLists.Application.Data.Model.ToDoItem;
-import com.TodoLists.Application.DTOs.Request.UpdateTask;
 import com.TodoLists.Application.Services.TodoItemServiceRepo;
 import com.TodoLists.Application.Services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +41,36 @@ public class UserServiceController {
         }
     }
 
+    @GetMapping("/getProjectTypeGroup")
+    public ResponseEntity<List<ToDoItem>> getProjectTypeGroup(@RequestBody GetProjectGroupReq getProjectGroupReq) throws Exception {
+        try {
+            return ResponseEntity.ok().body(todoItemServiceRepo.findTaskGroup(getProjectGroupReq));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/projectGroup/{id}")
+    public ResponseEntity<AllProGroup> getProjectGroup(@PathVariable("id") int id){
+        try {
+           return ResponseEntity.ok().body(todoItemServiceRepo.getListOfAllProjectGroupTaskCategory(id));
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     @GetMapping("/findUser")
     public void findUser(){
 
     }
-
+    @GetMapping("/todayTasks/{id}")
+    public ResponseEntity<FindTasksResponse> getTodayTask(@PathVariable("id") int id){
+        try {
+            return ResponseEntity.ok().body(todoItemServiceRepo.getTodayTask(id));
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
     @GetMapping("/findTask")
     public void findTask(){
 
@@ -67,7 +90,6 @@ public class UserServiceController {
     public String addTask(@RequestBody AddTaskRequest addTaskRequest){
         try{
             todoItemServiceRepo.addTask(addTaskRequest);
-
             return "task added successful";
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -104,15 +126,15 @@ public class UserServiceController {
 
     }
 
-    @PostMapping("/markItemASComplete")
-    public String markItemASComplete(int userId, int todoItemIds, boolean mark) throws Exception{
-        try {
-            todoItemServiceRepo.markItemASComplete(userId,todoItemIds,mark);
-            return "Completed Updated";
-        }catch (Exception e){
-            return e.getMessage();
-        }
-    }
+//    @PostMapping("/markItemASComplete")
+//    public String markItemASComplete(int userId, int todoItemIds, boolean mark) throws Exception{
+//        try {
+//            todoItemServiceRepo.markItemASComplete(userId,todoItemIds);
+//            return "Completed Updated";
+//        }catch (Exception e){
+//            return e.getMessage();
+//        }
+//    }
 
     @PostMapping("/deleteTask")
     public String deleteTask(int userId, int todoItemIds){
@@ -132,5 +154,16 @@ public class UserServiceController {
             return null;
         }
 }
+
+@PostMapping("/complete/{userId}/{todoItemIds}")
+    public String markItemASComplete(@PathVariable("userId") int userId,
+                                     @PathVariable("todoItemIds") int todoItemIds){
+    try {
+        todoItemServiceRepo.markItemASComplete(userId,todoItemIds);
+        return "Completed Updated";
+    }catch (Exception e){
+        return e.getMessage();
+    }
+    }
 
 }
