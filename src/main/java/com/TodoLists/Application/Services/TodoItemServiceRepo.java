@@ -11,7 +11,6 @@ import java.util.List;
 public interface TodoItemServiceRepo {
 
 void updateTitle(UpdateTask updateTask) throws Exception ;
-void updateDescription(UpdateTask updateTask) throws Exception;
     void markItemASComplete(int userId, int todoItemIds) throws Exception;
     void addTask(AddTaskRequest addReq) throws Exception;
     ToDoItem getTask(int taskId, int userId) throws Exception;
@@ -22,6 +21,9 @@ void updateDescription(UpdateTask updateTask) throws Exception;
 
     AllProGroup getListOfAllProjectGroupTaskCategory(int userTask) throws Exception;
     List<ToDoItem> findTaskGroup(GetProjectGroupReq getProjectGroupReq) throws Exception;
-    List<GroupTaskDetails> getGroupTaskDetails(int userTask) throws Exception;
+
     FindTasksResponse getTodayTask(int userId) throws Exception;
+    FindTasksResponse findByDate(String date, int userId) throws Exception;
+    void updateAll(UpdateAllRequest updateAllRequest) throws Exception;
+
 }

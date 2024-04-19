@@ -3,10 +3,9 @@ package com.TodoLists.Application.Services;
 import com.TodoLists.Application.DTOs.Request.CreateUserRequest;
 import com.TodoLists.Application.DTOs.Request.LoginRequest;
 import com.TodoLists.Application.DTOs.Response.LoginResponse;
-import com.TodoLists.Application.Data.Model.ToDoItem;
 import com.TodoLists.Application.Data.Model.User;
-import com.TodoLists.Application.Data.Repository.UserRepoImpl;
 import com.TodoLists.Application.Data.Repository.UserRepo;
+import com.TodoLists.Application.Data.Repository.UserRepoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +73,7 @@ public class UserServiceImpl implements UserServiceRepo {
     public List<User> findAllUser() throws Exception {
         return userRepo.findAll();
     }
+
 
 
 

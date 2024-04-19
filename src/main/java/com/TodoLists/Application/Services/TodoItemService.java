@@ -8,21 +8,25 @@ import com.TodoLists.Application.Data.Model.ToDoItem;
 import com.TodoLists.Application.Data.Model.User;
 import com.TodoLists.Application.Data.Repository.TodoItemRepo;
 import com.TodoLists.Application.Data.Repository.UserRepo;
+import com.TodoLists.Application.DTOs.UpdateAllMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
+//@AllArgsConstructor
 public class TodoItemService implements TodoItemServiceRepo {
     @Autowired
     private TodoItemRepo todoItemRepo;
     @Autowired
     private UserRepo userRepo;
+    UpdateAllMap updateAllMap = new UpdateAllMap();
 
     @Override
     public void updateTitle(UpdateTask updateTask) throws Exception {
@@ -37,13 +41,6 @@ public class TodoItemService implements TodoItemServiceRepo {
 
 
     @Override
-    public void updateDescription(UpdateTask updateTask) throws Exception {
-        ToDoItem item = todoItemRepo.findTask(updateTask.getTaskId(), updateTask.getUserId());
-        item.setDescription(updateTask.getItem());
-        todoItemRepo.save(item);
-    }
-
-    @Override
     public void markItemASComplete(int userId, int todoItemIds) throws Exception {
         ToDoItem item = todoItemRepo.findTask(todoItemIds, userId);
         item.setCompleted(true);
@@ -53,23 +50,53 @@ public class TodoItemService implements TodoItemServiceRepo {
 
     public void addTask(AddTaskRequest addReq) throws Exception {
         User user11 = userRepo.findById(addReq.getUserId());
-        List<ToDoItem> list = user11.getMyTask();
         if (user11.isEnable()) {
             ToDoItem newTask = new ToDoItem();
             newTask.setTitle(addReq.getTitle());
             newTask.setDescription(addReq.getDescription());
             newTask.setPriority(Priority.valueOf(addReq.getPriority()));
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M-d-yyyy");
-                LocalDate date = LocalDate.parse(addReq.getDueDate(), formatter);
-                newTask.setDueDate(date);
-//            newTask.setDueDate(LocalDate.parse(addReq.getDueDate()));
+            newTask.setStartDate(getDate(addReq.getStartDate()));
+            LocalDate date = getDate(addReq.getEndDate());
+            newTask.setDueDate(date);
             newTask.setUserId(addReq.getUserId());
-            newTask.setTaskType(TaskType.valueOf(addReq.getTaskType()));
+
+            newTask.setTaskType(verifyEnum(addReq.getTaskType().strip().replace(' ', '_')));
+
             todoItemRepo.save(newTask);
         } else {
             throw new Exception("User not logged in ");
         }
+    }
+
+    public static TaskType verifyEnum(String enumC) throws Exception {
+      return Arrays.stream(TaskType.values()).toList()
+              .stream().toString().equals(enumC) ? TaskType.valueOf(enumC)
+              : addingToTasType(enumC);
+    }
+
+    public static TaskType addingToTasType(String addableEnum) throws Exception {
+        if (addableEnum.length() > 25) throw new RuntimeException("Such task type is not allowed here");
+        String fileName = "C:\\Users\\Israel\\MyFile\\TodoLists\\src\\main\\java\\com\\TodoLists\\Application\\Data\\Model\\TaskType.java";
+
+        String fileInfo = null;
+        try( FileInputStream fileInputStream = new FileInputStream(fileName)){
+            fileInfo = new String(fileInputStream.readAllBytes()).replace('}', ' ')+',';
+        }catch (IOException e){
+            throw new Exception(e.getMessage());
+        }
+
+        try(FileOutputStream fileOutputStream = new FileOutputStream(fileName)){
+            String toWrite = fileInfo + "\n\t"+addableEnum+"}";
+            fileOutputStream.write(toWrite.getBytes());
+        }catch (IOException e){
+           throw new Exception(e.getMessage());
+        }
+        return  TaskType.values()[TaskType.values().length-1];
+    }
+
+    public static LocalDate getDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M-d-yyyy");
+        return LocalDate.parse(date, formatter);
     }
 
     public ToDoItem getTask(int taskId, int userId) throws Exception {
@@ -95,44 +122,29 @@ public class TodoItemService implements TodoItemServiceRepo {
         AllProGroup allProGroup = new AllProGroup();
         for (int i = 0; i < TaskType.values().length; i++) {
             List<ToDoItem> items = new ArrayList<>();
-            for (int j = 0; j < toDoItems.size(); j++) {
-                if (toDoItems.get(j).getTaskType() == TaskType.values()[i]) {
-                    items.add(toDoItems.get(j));
+            for (ToDoItem toDoItem : toDoItems) {
+                if (toDoItem.getTaskType() == TaskType.values()[i]) {
+                    items.add(toDoItem);
                 }
             }
             lists.add(items);
         }
         allProGroup.setItems(lists);
+        allProGroup.setGroups(Arrays.stream(TaskType.values()).map(x->String.valueOf(x).replace('_', ' ')).toList());
         return allProGroup;
     }
 
     public List<ToDoItem> findTaskGroup(GetProjectGroupReq getProjectGroupReq) throws Exception {
         List<ToDoItem> lists = new ArrayList<>();
         List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(getProjectGroupReq.getUserId());
-//        for (int i = 0; i < TaskType.values().length; i++) {
-            for (int j = 0; j < toDoItems.size(); j++) {
-                if (Objects.equals(toDoItems.get(j).getTaskType().toString(), getProjectGroupReq.getTaskType())) {
-                    lists.add(toDoItems.get(j));
-                }
-//            }
+        for (ToDoItem toDoItem : toDoItems) {
+            if (Objects.equals(toDoItem.getTaskType().toString(), getProjectGroupReq.getTaskType())) {
+                lists.add(toDoItem);
+            }
         }
         return lists;
     }
 
-    public List<GroupTaskDetails> getGroupTaskDetails(int userTask) throws Exception {
-        List<GroupTaskDetails> groupTaskDetails = new ArrayList<>();
-        AllProGroup find = getListOfAllProjectGroupTaskCategory(userTask);
-        for (int i = 0; i < find.getItems().size(); i++) {
-            for (int j = 0; j < find.getItems().get(i).size(); j++) {
-                GroupTaskDetails groupTaskDetails1 = new GroupTaskDetails(find.getItems().get(i).size(), find.getItems().get(i).get(j).getTaskType().toString(), 0);
-                groupTaskDetails.add(groupTaskDetails1);
-            }
-        }
-        return groupTaskDetails;
-    }
-
-    public void verify(String Pri) {
-    }
 
     public FindTasksResponse getTodayTask(int userId) throws Exception {
       List<ToDoItem> list =  todoItemRepo.findAllUserTask(userId);
@@ -144,6 +156,50 @@ public class TodoItemService implements TodoItemServiceRepo {
         }
         return new FindTasksResponse(todayTask);
     }
+
+    public FindTasksResponse findByDate(String date, int userId) throws Exception {
+        LocalDate dateFormat = getDate(date);
+        List<ToDoItem> itemFound = new ArrayList<>();
+        List<ToDoItem> toDoItemList = todoItemRepo.findAllUserTask(userId);
+        toDoItemList
+                .stream()
+                .filter((x)->x.getDueDate()==dateFormat)
+                .forEach(itemFound::add);
+        FindTasksResponse findTasksResponse = new FindTasksResponse(itemFound);
+         return itemFound.isEmpty() ? getTodayTask(userId) : findTasksResponse;
+    }
+
+    @Override
+    public void updateAll(UpdateAllRequest updateAllRequest) throws Exception {
+        HashMap<String, String>  get = updateAllRequest.getRequestMap();
+        ToDoItem task = taskBy_StartDate_EndDate_TaskType(
+                updateAllRequest.getUserId(),
+                TodoItemService.getDate(get.get("startDate")),
+                TodoItemService.getDate(get.get("endDate")),
+                TodoItemService.verifyEnum(get.get("taskType")));
+        if (task!=null) {
+            if (!task.isCompleted()) {
+                ToDoItem item = updateAllMap.updateFromMap(updateAllRequest.getRequestMap(), task);
+                todoItemRepo.save(item);
+            }
+        }
+    }
+    ToDoItem taskBy_StartDate_EndDate_TaskType(int userId,
+                                                         LocalDate s,
+                                                         LocalDate e,
+                                                         TaskType type) throws Exception {
+        List<ToDoItem> task = todoItemRepo.findAllUserTask(userId);
+        final ToDoItem[] taskFound = new ToDoItem[1];
+         task.stream().
+                 filter(x->
+                          x.getStartDate()
+                         .equals(s) && x.getDueDate()
+                         .equals(e) && x.getTaskType()
+                         .equals(type))
+                 .forEach(x-> taskFound[0] =x);
+        return taskFound[0];
+    }
+
 }
 
 

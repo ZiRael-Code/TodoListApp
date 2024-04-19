@@ -30,6 +30,12 @@ public class ToDoItem implements Serializable {
     private LocalDate dueDate;
 
     @JsonIgnore
+    @JsonProperty("dueDate")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDate startDate;
+
+    @JsonIgnore
     @JsonProperty("createdDate")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

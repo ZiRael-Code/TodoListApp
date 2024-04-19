@@ -22,9 +22,7 @@ TodoItemRepo todoItemRepo;
         toDoItem.setUserId(1);
         todoItemRepo.save(toDoItem);
         assertEquals(1,  todoItemRepo.findAllUserTask(1).size());
-
     }
-
     @Test
     void deleteAll() throws Exception {
         todoItemRepo.deleteAll(1);

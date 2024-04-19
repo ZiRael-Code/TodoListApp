@@ -1,6 +1,7 @@
 package com.TodoLists.Application.Controller;
 
 import com.TodoLists.Application.DTOs.Request.*;
+import com.TodoLists.Application.DTOs.Response.AddTaskResponse;
 import com.TodoLists.Application.DTOs.Response.FindTasksResponse;
 import com.TodoLists.Application.DTOs.Response.LoginResponse;
 import com.TodoLists.Application.Data.Model.ToDoItem;
@@ -87,10 +88,10 @@ public class UserServiceController {
     }
 
     @PostMapping("/addTask")
-    public String addTask(@RequestBody AddTaskRequest addTaskRequest){
+    public ResponseEntity<AddTaskResponse> addTask(@RequestBody AddTaskRequest addTaskRequest){
         try{
             todoItemServiceRepo.addTask(addTaskRequest);
-            return "task added successful";
+            return ResponseEntity.ok().body(new AddTaskResponse("task added successful"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -164,6 +165,16 @@ public class UserServiceController {
     }catch (Exception e){
         return e.getMessage();
     }
+    }
+
+    @GetMapping("/getTaskByDate/{date}/{userId}")
+    public ResponseEntity<FindTasksResponse> findTasksByDate
+            (@PathVariable("date") String date, @PathVariable("userId") int userId){
+        try{
+           return ResponseEntity.ok().body(todoItemServiceRepo.findByDate(date, userId));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

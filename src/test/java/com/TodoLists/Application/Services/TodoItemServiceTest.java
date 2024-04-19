@@ -2,14 +2,14 @@ package com.TodoLists.Application.Services;
 
 import com.TodoLists.Application.DTOs.Request.AddTaskRequest;
 import com.TodoLists.Application.DTOs.Request.LoginRequest;
+import com.TodoLists.Application.DTOs.Request.UpdateAllRequest;
 import com.TodoLists.Application.Data.Model.Priority;
-import com.TodoLists.Application.Data.Model.ToDoItem;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -24,7 +24,7 @@ UserServiceImpl userService;
         newTask.setTitle("Test Task");
         newTask.setDescription("Still need to do html");
         newTask.setPriority(String.valueOf(Priority.MEDIUM));
-        newTask.setDueDate(String.valueOf(LocalDate.now()));
+        newTask.setEndDate(String.valueOf(LocalDate.now()));
         newTask.setUserId(2);
 
         LoginRequest loginRequest = new LoginRequest();
@@ -54,7 +54,20 @@ UserServiceImpl userService;
     }
 
     @Test
-    void updateDescription() {
+    void updateDescription() throws Exception {
+        assertEquals("test",todoItemService.getAllTasks(1).getLast().getTitle());
+        UpdateAllRequest updateAllRequest = new UpdateAllRequest();
+        updateAllRequest.setId(1);
+        HashMap<String, String> value = new HashMap<>();
+        value.put("startDate", "4-9-2024");
+        value.put("endDate", "4-9-2024");
+        value.put("taskType", "DAILY_TASK");
+        value.put("title", "Hello");
+        value.put("description", "");
+        updateAllRequest.setRequestMap(value);
+        todoItemService.updateAll(updateAllRequest);
+        assertEquals("Hello",todoItemService.getAllTasks(1).getLast().getTitle());
+
     }
 
     @Test
