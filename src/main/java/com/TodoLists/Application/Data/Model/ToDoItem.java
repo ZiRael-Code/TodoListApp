@@ -13,6 +13,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @ToString
 public class ToDoItem implements Serializable {
@@ -42,11 +45,20 @@ public class ToDoItem implements Serializable {
     private LocalDateTime createdDate;
 
 
+
     private Priority priority;
     private boolean completed = false;
     private String taskName;
-    private TaskType taskType;
+    private String taskType;
+
+
     private int userId;
+
+    @JsonIgnore
+    @JsonProperty("startTimer")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime startTimer;
 
 
     public ToDoItem(){

@@ -21,7 +21,6 @@ class TodoItemRepoImpli implements TodoItemRepo{
                     return item1;
                 }
             }
-
         return null;
     }
 
@@ -89,11 +88,12 @@ class TodoItemRepoImpli implements TodoItemRepo{
                newPriority.add(toDoItem);
            }
        }
+
         return newPriority;
     }
 
 
-    //    @Override
+        @Override
     public void deleteTask(int userId, int todoItemIds) throws Exception{
         User user = userRepo.findById(userId);
         List<ToDoItem> toDoItems = user.getMyTask();

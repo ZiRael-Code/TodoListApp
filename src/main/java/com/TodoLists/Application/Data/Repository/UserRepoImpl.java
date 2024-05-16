@@ -1,6 +1,7 @@
 package com.TodoLists.Application.Data.Repository;
 
 import com.TodoLists.Application.Data.Model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -37,7 +38,9 @@ public class UserRepoImpl implements UserRepo {
     public List<User> findAll() {
         List<User> findAllUsers = new ArrayList<>();
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(FILENAME))) {
-                findAllUsers =  (List<User>) objectInputStream.readObject();
+                findAllUsers = (List<User>) objectInputStream.readObject();
+
+
         } catch (EOFException e) {
            return findAllUsers;
         } catch (IOException | ClassNotFoundException e) {

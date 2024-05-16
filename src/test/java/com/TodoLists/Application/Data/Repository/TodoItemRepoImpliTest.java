@@ -43,5 +43,6 @@ TodoItemRepo todoItemRepo;
     void deleteTask() throws Exception {
         todoItemRepo.deleteTask(1, 1);
         assertEquals(0, todoItemRepo.findAllUserTask(1).size());
+
     }
 }

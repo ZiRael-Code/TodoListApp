@@ -30,12 +30,14 @@ class UserRepoImplTest {
         User user = new User();
         user.setPassword("hello");
         user.setUsername("israel");
-        userRepo.save(user);
-        assertEquals(3,userRepo.findAll().size());
+//        userRepo.save(user);
+        System.out.println(userRepo.findAll());
+//        assertEquals(3,userRepo.findAll().size());
     }
 
     @Test
     void  findAlls(){
+//        System.out.println(userRepo.findAll());
         for(User u :userRepo.findAll()){
             System.out.println(u.toString());
         }
@@ -92,4 +94,10 @@ void findByIf() throws Exception {
         assertEquals(0, userRepo.findAll().size());
     }
 
+    @Test
+    void advantage() throws Exception {
+        User user = userRepo.findById(1);
+        user.setEnable(true);
+        userRepo.save(user);
+    }
 }

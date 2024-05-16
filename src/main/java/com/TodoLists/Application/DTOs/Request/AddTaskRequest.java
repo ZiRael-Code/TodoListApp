@@ -13,5 +13,4 @@ public class AddTaskRequest {
     private String taskType;
     private String startHour;
 
-
 }
