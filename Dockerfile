@@ -7,30 +7,21 @@
 # EXPOSE 8080
 # ENTRYPOINT ["java","-jar","TodoLists.jar"]
 
-# Stage 1: Build the application
 FROM maven:3.9.5-openjdk-21 AS build
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the pom.xml and source code into the working directory
 COPY pom.xml .
 COPY src ./src
 
-# Run the Maven build
 RUN mvn clean package -DskipTests
 
-# Stage 2: Run the application
 FROM openjdk:21-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the JAR file from the previous stage
 COPY --from=build /app/target/TodoLists-0.0.1-SNAPSHOT.jar TodoLists.jar
 
-# Expose the port your application runs on
 EXPOSE 8080
 
-# Set the entry point for the container
 ENTRYPOINT ["java", "-jar", "TodoLists.jar"]
