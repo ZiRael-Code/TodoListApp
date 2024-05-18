@@ -9,10 +9,10 @@
         <version>3.2.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-
     <groupId>org.example</groupId>
     <artifactId>TodoLists</artifactId>
     <version>1.0-SNAPSHOT</version>
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
