@@ -67,4 +67,28 @@
         </dependency>
 
     </dependencies>
+
+<!--    <project>-->
+        <!-- Other configurations like groupId, artifactId, version, etc. -->
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <mainClass>com.TodoLists.Application.Main</mainClass> <!-- Replace with your main class -->
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+<!--    </project>-->
+
+
+
 </project>
