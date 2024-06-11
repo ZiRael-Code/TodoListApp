@@ -78,9 +78,15 @@
         </dependency>
 
     </dependencies>
-
-
-
-
-
+    <build>
+        <plugins>
+    <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+            <mainClass>com.places.Main</mainClass>
+        </configuration>
+    </plugin>
+        </plugins>
+    </build>
 </project>
