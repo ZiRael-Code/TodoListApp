@@ -3,11 +3,9 @@ package com.TodoLists.Controller;
 //import com.TodoLists.Application.DTOs.Request.*;
 
 import com.TodoLists.DTOs.Request.*;
-import com.TodoLists.DTOs.Response.AddTaskResponse;
-import com.TodoLists.DTOs.Response.FindTasksResponse;
-import com.TodoLists.DTOs.Response.LoginResponse;
-import com.TodoLists.DTOs.Response.MyNotification;
+import com.TodoLists.DTOs.Response.*;
 import com.TodoLists.Data.Model.ToDoItem;
+import com.TodoLists.Data.Model.User;
 import com.TodoLists.Services.TodoItemService;
 import com.TodoLists.Services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,7 @@ public class UserServiceController {
     public ResponseEntity<String> createAccount(@RequestBody CreateUserRequest createUserRequest){
         try{
             userService.createAccount(createUserRequest);
-            return ResponseEntity.ok().body("{\"message\": \"Account Created\"}");
+            return ResponseEntity.ok().body("Account Created");
         } catch (Exception e) {
             return  ResponseEntity.badRequest().body("Error: "+e.getMessage());
         }
@@ -55,10 +53,10 @@ public class UserServiceController {
         }
     }
 
-    @GetMapping("/projectGroup/{id}")
-    public ResponseEntity<AllProGroup> getProjectGroup(@PathVariable("id") int id){
+    @GetMapping("/getDashboard/{id}")
+    public Dashboard getDashboardPackage(@PathVariable("id") int id){
         try {
-           return ResponseEntity.ok().body(todoItemService.getListOfAllProjectGroupTaskCategory(id));
+           return todoItemService.getDashboardPackage(id);
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
@@ -187,5 +185,23 @@ public class UserServiceController {
             return null;
         }
     }
+
+    @GetMapping("/getUser/{userId}")
+    public User getUser(@PathVariable("userId") int userId){
+        try{
+            return (userService.findUserById(userId));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+//    @GetMapping("/getDashboard/{userId}")
+//    public DashBoardResponse mobileDashboardMobile(@PathVariable("userId") int userId){
+//        try{
+//
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
 
 }

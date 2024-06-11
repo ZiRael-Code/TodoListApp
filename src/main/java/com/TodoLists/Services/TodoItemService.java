@@ -1,9 +1,7 @@
 package com.TodoLists.Services;
 
-import com.TodoLists.Application.DTOs.Request.*;
 import com.TodoLists.Data.Model.ToDoItem;
 import com.TodoLists.DTOs.Request.*;
-import org.TodoLists.Application.DTOs.Request.*;
 import com.TodoLists.DTOs.Response.FindTasksResponse;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +19,7 @@ void updateTitle(UpdateTask updateTask) throws Exception ;
 
     List<ToDoItem> getAllTasks(int userId) throws Exception;
 
-    AllProGroup getListOfAllProjectGroupTaskCategory(int userTask) throws Exception;
+    Dashboard getDashboardPackage(int userTask) throws Exception;
     List<ToDoItem> findTaskGroup(GetProjectGroupReq getProjectGroupReq) throws Exception;
 
     FindTasksResponse getTodayTask(int userId) throws Exception;

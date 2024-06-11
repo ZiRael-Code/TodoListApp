@@ -1,6 +1,7 @@
 package com.TodoLists.Data.Repository;
 
 import com.TodoLists.Data.Model.User;
+import com.TodoLists.TodoMain;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
@@ -10,7 +11,7 @@ import java.util.List;
 @Repository
 public class UserRepoImpl implements UserRepo {
 
-    private final String FILENAME = "C:\\Users\\Israel\\MyFile\\TodoLists\\src\\main\\java\\com\\TodoLists\\Application\\user.dat";
+    private final String FILENAME = TodoMain.FILENAME;
     private int userId = 1;
 
 

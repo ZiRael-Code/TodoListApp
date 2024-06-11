@@ -87,7 +87,7 @@ class UserRepoImplTest {
 
 @Test
 void findByIf() throws Exception {
-    System.out.println(userRepo.findById(2));
+    System.out.println(userRepo.findById(1));
 }
     @Test
     void findAll(){

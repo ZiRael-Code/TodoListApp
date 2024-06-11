@@ -38,7 +38,7 @@ TodoItemServiceImpl todoItemServiceImpl;
 
     @Test
     void getAllTasks() throws Exception {
-       assertEquals(0, todoItemServiceImpl.getAllTasks(2).size());
+       assertEquals(0, todoItemServiceImpl.getAllTasks(1).size());
 //       for (ToDoItem i : todoItemService.getAllTasks(1)){
 //           System.out.println(i.getTodoItemId());
 //       }

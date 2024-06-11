@@ -88,19 +88,20 @@ public class UserServiceImpl implements UserServiceRepo {
     @Override
     public User findUserById(int userId) throws Exception {
         User user = userRepo.findById(userId);
+        System.out.println(user.getId() +" is the id user found");
         List<Notification> notifications = user.getMyNotification();
 
         List<Notification> close = notificationServie.closeToDueDate(user.getMyTask());
         List<Notification> start = notificationServie.closeToStartDate(user.getMyTask());
        if (close != null || start != null) {
-           notifications.add(close.stream().iterator().next());
+           assert close != null;
+           notifications.addAll(close);
+           notifications.addAll(start);
            user.setMyNotification(notifications);
+           User afters = userRepo.save(user);
+           System.out.println(afters.getId()+" User id after save");
 
-           notifications.add(start.stream().iterator().next());
-           user.setMyNotification(notifications);
-            userRepo.save(user);
        }
-
         return user;
     }
 

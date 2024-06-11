@@ -1,11 +1,12 @@
-FROM maven:3.8.5-openjdk-17 AS build
+FROM maven:3.8.7 as build
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn -B clean package -DskipTests
 
-FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /target/TodoLists-1.0-SNAPSHOT.jar TodoLists.jar
+FROM openjdk:17-jdk-slim
+COPY --from=build ./target/*.jar TodoLists.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","TodoLists.jar"]
+
 
 
 #

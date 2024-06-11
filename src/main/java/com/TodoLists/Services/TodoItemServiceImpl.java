@@ -1,13 +1,9 @@
 package com.TodoLists.Services;
 
-import com.TodoLists.Application.DTOs.Request.*;
 import com.TodoLists.Data.Repository.TodoItemRepo;
 import com.TodoLists.DTOs.Request.*;
-import org.TodoLists.Application.DTOs.Request.*;
 import com.TodoLists.DTOs.Response.FindTasksResponse;
-import com.TodoLists.Application.Data.Model.*;
 import com.TodoLists.Data.Model.*;
-import org.TodoLists.Application.Data.Model.*;
 import com.TodoLists.DTOs.UpdateAllMap;
 import com.TodoLists.Data.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,34 +48,29 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     public void addTask(AddTaskRequest addReq) throws Exception {
         User user11 = userService.findUserById(addReq.getUserId());
-        if (user11 != null) {
-            if (user11.isEnable()) {
-                ToDoItem newTask = new ToDoItem();
-                newTask.setTitle(addReq.getTitle());
-                newTask.setDescription(addReq.getDescription());
-                newTask.setPriority(Priority.valueOf(addReq.getPriority()));
-                newTask.setStartDate(getDate(addReq.getStartDate()));
-                LocalDate date = getDate(addReq.getEndDate());
-                newTask.setDueDate(date);
-                newTask.setUserId(addReq.getUserId());
-                LocalDateTime time = stripRealTimerFromTimerType();
-                newTask.setStartTimer(time);
+        System.out.println(user11.getId() +" Is the id user  found");
+        if (user11.isEnable()) {
+            ToDoItem newTask = new ToDoItem();
+            newTask.setTitle(addReq.getTitle());
+            newTask.setDescription(addReq.getDescription());
+            newTask.setPriority(Priority.valueOf(addReq.getPriority()));
+            newTask.setStartDate(getDate(addReq.getStartDate()));
+            LocalDate date = getDate(addReq.getEndDate());
+            newTask.setDueDate(date);
+            newTask.setUserId(addReq.getUserId());
+            LocalDateTime time = stripRealTimerFromTimerType();
+            newTask.setStartTimer(time);
 
-                newTask.setTaskType(verifyEnum(addReq.getTaskType().strip().replace(' ', '_'), userService.findUserById(addReq.getUserId())));
-                List<Notification> notifications = user11.getMyNotification();
-                System.out.println("User is "+user11);
-                System.out.println("Notifications is "+notifications);
-                Notification notification = notificationServie.newTask(user11.getUsername(), newTask);
-                notifications.add(notification);
-                System.out.println("The notification is "+notification);
-                user11.setMyNotification(notifications);
-                userRepo.save(user11);
-                todoItemRepo.save(newTask);
-            } else {
-                throw new Exception("User not logged in ");
-            }
-        }else {
-            throw new RuntimeException("not found");
+            newTask.setTaskType(verifyEnum(addReq.getTaskType().strip().replace(' ', '_'), userService.findUserById(addReq.getUserId())));
+            List<Notification> notifications = user11.getMyNotification();
+            Notification notification = notificationServie.newTask(user11.getUsername(), newTask);
+            notifications.add(notification);
+            System.out.println("The notification is " + notification);
+            user11.setMyNotification(notifications);
+            userRepo.save(user11);
+            todoItemRepo.save(newTask);
+        } else {
+            throw new Exception("User not logged in ");
         }
     }
 
@@ -125,10 +116,10 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     }
 
-    public AllProGroup getListOfAllProjectGroupTaskCategory(int userTask) throws Exception {
+    public Dashboard getDashboardPackage(int userTask) throws Exception {
         List<List<ToDoItem>> lists = new ArrayList<>();
         List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(userTask);
-        AllProGroup allProGroup = new AllProGroup();
+        Dashboard dashboard = new Dashboard();
         List<String> taskType = userService.findUserById(userTask).getTaskCategory();
         Arrays.stream(TaskType.values()).forEach(taskType1 -> taskType.add(taskType1.toString()));
 
@@ -141,9 +132,22 @@ public class TodoItemServiceImpl implements TodoItemService {
             }
             lists.add(items);
         }
-        allProGroup.setItems(lists);
-        allProGroup.setGroups(Arrays.stream(TaskType.values()).map(x->String.valueOf(x).replace('_', ' ')).toList());
-        return allProGroup;
+        List<ToDoItem> todayItem = getTodayTask(userTask).getItems();
+        dashboard.setTodayItem(todayItem);
+        int totalSize = todayItem.size();
+        int[] completed = {1};
+        todayItem.forEach(x->{
+            if (x.isCompleted()){
+                completed[0]+=1;
+            }
+        });
+        dashboard.setArrangedItems(lists);
+        int total = (completed[0] /totalSize) * 100;
+        dashboard.setTotalCompleted(total);
+
+//        dashboard.setItemsGroups(Arrays.stream(TaskType.values()).map(x->String.valueOf(x).replace('_', ' ')).toList());
+
+        return dashboard;
     }
 
     public List<ToDoItem> findTaskGroup(GetProjectGroupReq getProjectGroupReq) throws Exception {
