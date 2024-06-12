@@ -3,7 +3,7 @@ COPY . .
 RUN mvn -B clean package -DskipTests
 
 FROM openjdk:17-jdk-slim
-COPY --from=build ./target/*.jar TodoLists.jar
+COPY --from=build ./target/TodoLists-1.0-SNAPSHOT.jar.original TodoLists.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","TodoLists.jar"]
 
