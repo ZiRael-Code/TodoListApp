@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.nio.file.Files;
 import java.nio.file.Path;
 @SpringBootApplication
-public class TodoMain implements CommandLineRunner{
+public class TodoListsMain implements CommandLineRunner{
     public static final String FILENAME = "C:\\Users\\Israel\\MyFile\\TodoLists\\src\\main\\java\\com\\TodoLists\\user.dat";
     public static void main(String[] args) {
-        SpringApplication.run(TodoMain.class, args);
+        SpringApplication.run(TodoListsMain.class, args);
     }
 
     @Override
