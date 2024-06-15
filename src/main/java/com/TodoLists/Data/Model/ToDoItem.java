@@ -13,6 +13,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @ToString
@@ -51,12 +52,8 @@ public class ToDoItem implements Serializable {
 
 
     private int userId;
-
-    @JsonIgnore
-    @JsonProperty("startTimer")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime startTimer;
+    private String startTimer;
+    private String endTimer;
 
 
     public ToDoItem(){

@@ -58,8 +58,8 @@ public class TodoItemServiceImpl implements TodoItemService {
             LocalDate date = getDate(addReq.getEndDate());
             newTask.setDueDate(date);
             newTask.setUserId(addReq.getUserId());
-            LocalDateTime time = stripRealTimerFromTimerType();
-            newTask.setStartTimer(time);
+//            LocalDateTime time = stripRealTimerFromTimerType();
+            newTask.setStartTimer(addReq.getStartHour());
 
             newTask.setTaskType(verifyEnum(addReq.getTaskType().strip().replace(' ', '_'), userService.findUserById(addReq.getUserId())));
             List<Notification> notifications = user11.getMyNotification();
@@ -79,7 +79,7 @@ public class TodoItemServiceImpl implements TodoItemService {
         return null;
     }
 
-    public static String verifyEnum(String enumC,User user) throws Exception {
+    public String verifyEnum(String enumC,User user) throws Exception {
         List<String> taskType = user.getTaskCategory();
         Arrays.stream(TaskType.values()).forEach(taskType1 -> taskType.add(taskType1.toString()));
         return taskType.stream().toList()
@@ -88,9 +88,11 @@ public class TodoItemServiceImpl implements TodoItemService {
     }
 
 
-    public static String addingToTasType(String addableEnum, User userId) throws Exception {
+    public  String addingToTasType(String addableEnum, User userId) throws Exception {
         List<String> added = userId.getTaskCategory();
         added.add(addableEnum.toUpperCase().strip().replace(' ', '-'));
+        userId.setTaskCategory(added);
+        userRepo.save(userId);
         return added.get(added.size()-1);
     }
 
@@ -117,21 +119,42 @@ public class TodoItemServiceImpl implements TodoItemService {
     }
 
     public Dashboard getDashboardPackage(int userTask) throws Exception {
-        List<List<ToDoItem>> lists = new ArrayList<>();
+        List<HashMap<String, String>> lists = new ArrayList<>();
         List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(userTask);
         Dashboard dashboard = new Dashboard();
         List<String> taskType = userService.findUserById(userTask).getTaskCategory();
         Arrays.stream(TaskType.values()).forEach(taskType1 -> taskType.add(taskType1.toString()));
 
         for (String s : taskType) {
-            List<ToDoItem> items = new ArrayList<>();
+//            List<ToDoItem> items = new ArrayList<>();
+            int itemSize = 0;
+            HashMap<String, String> value = new HashMap<>();
+            String projName =s;
+            int  completedTaskInProj = 0;
             for (ToDoItem toDoItem : toDoItems) {
                 if (toDoItem.getTaskType().equals(s)) {
-                    items.add(toDoItem);
+                    itemSize++;
+//                    items.add(toDoItem);
+                    if (toDoItem.isCompleted()){
+                        completedTaskInProj+=1;
+                    }
                 }
             }
-            lists.add(items);
+            int completedTask;
+            try {
+                completedTask = (completedTaskInProj /itemSize)*100;
+            }catch (ArithmeticException a){
+                completedTask = 0;
+            }
+
+            value.put("taskSizeInProject", String.valueOf(itemSize));
+            value.put("totalCompletedTask", String.valueOf(completedTask));
+            value.put("projectName", projName.replace('_',' '));
+
+
+            lists.add(value);
         }
+
         List<ToDoItem> todayItem = getTodayTask(userTask).getItems();
         dashboard.setTodayItem(todayItem);
         int totalSize = todayItem.size();
@@ -142,8 +165,12 @@ public class TodoItemServiceImpl implements TodoItemService {
             }
         });
         dashboard.setArrangedItems(lists);
-        int total = (completed[0] /totalSize) * 100;
-        dashboard.setTotalCompleted(total);
+        try {
+            int total = (completed[0] / totalSize) * 100;
+            dashboard.setTotalCompleted(total);
+        }catch (RuntimeException e){
+            dashboard.setTotalCompleted(0);
+        }
 
 //        dashboard.setItemsGroups(Arrays.stream(TaskType.values()).map(x->String.valueOf(x).replace('_', ' ')).toList());
 

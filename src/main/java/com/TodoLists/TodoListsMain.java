@@ -9,13 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 @SpringBootApplication
 public class TodoListsMain implements CommandLineRunner{
-    public static final String FILENAME = System.getenv("FILE_PATH") != null ? System.getenv("FILE_PATH") : "/persistent/file.dat";
+    public static final String FILENAME = System.getenv("FILE_PATH") != null ? System.getenv("FILE_PATH") : "C:\\Users\\Israel\\Desktop\\TodoListApp\\src\\main\\java\\user";
     public static void main(String[] args) {
         SpringApplication.run(TodoListsMain.class, args);
     }
 
     @Override
     public void run(String... args) throws Exception {
+
         File file = new File(FILENAME);
 
         if (!file.exists()) {
