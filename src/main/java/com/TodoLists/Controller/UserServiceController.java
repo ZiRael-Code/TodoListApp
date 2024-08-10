@@ -61,6 +61,14 @@ public class UserServiceController {
             throw new RuntimeException(e.getMessage());
         }
     }
+    @GetMapping("/getAppPackage/{id}")
+    public AppPackage getAppPackage(@PathVariable("id") int id){
+        try {
+           return todoItemService.getAppPackage(id);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage()+"\n"+e.fillInStackTrace());
+        }
+    }
 
     @GetMapping("/findUser")
     public void findUser(){

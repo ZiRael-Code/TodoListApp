@@ -1,5 +1,6 @@
 package com.TodoLists.Services;
 
+import com.TodoLists.DTOs.Response.AppPackage;
 import com.TodoLists.Data.Repository.TodoItemRepo;
 import com.TodoLists.DTOs.Request.*;
 import com.TodoLists.DTOs.Response.FindTasksResponse;
@@ -33,6 +34,17 @@ public class TodoItemServiceImpl implements TodoItemService {
     }
 
     public List<ToDoItem> getAllTasks(int userId) throws Exception {
+        List<ToDoItem> allTask = todoItemRepo.findAllUserTask(userId);
+        for (ToDoItem item : allTask) {
+            if (item.getStartDate().isBefore(LocalDateTime.now())) {
+                item.setTaskStatus(TaskStatus.TODO);
+            } else if (item.getStartDate().isEqual(LocalDateTime.now())) {
+                item.setTaskStatus(TaskStatus.INPROGRESS);
+            } else if (item.getStartDate().isAfter(LocalDateTime.now())) {
+                item.setTaskStatus(TaskStatus.COMPLETED);
+            }
+            todoItemRepo.save(item);
+        }
         return todoItemRepo.findAllUserTask(userId);
     }
 
@@ -55,11 +67,10 @@ public class TodoItemServiceImpl implements TodoItemService {
             newTask.setDescription(addReq.getDescription());
             newTask.setPriority(Priority.valueOf(addReq.getPriority()));
             newTask.setStartDate(getDate(addReq.getStartDate()));
-            LocalDate date = getDate(addReq.getEndDate());
+            LocalDateTime date = getDate(addReq.getDueDate());
             newTask.setDueDate(date);
             newTask.setUserId(addReq.getUserId());
 //            LocalDateTime time = stripRealTimerFromTimerType();
-            newTask.setStartTimer(addReq.getStartHour());
 
             newTask.setTaskType(verifyEnum(addReq.getTaskType().strip().replace(' ', '_'), userService.findUserById(addReq.getUserId())));
             List<Notification> notifications = user11.getMyNotification();
@@ -96,9 +107,9 @@ public class TodoItemServiceImpl implements TodoItemService {
         return added.get(added.size()-1);
     }
 
-    public static LocalDate getDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        return LocalDate.parse(date, formatter);
+    public static LocalDateTime getDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        return LocalDateTime.parse(date, formatter);
     }
 
     public ToDoItem getTask(int taskId, int userId) throws Exception {
@@ -177,6 +188,18 @@ public class TodoItemServiceImpl implements TodoItemService {
         return dashboard;
     }
 
+    @Override
+    public AppPackage getAppPackage(int userTask) throws Exception {
+        FindTaskPackage findTaskPackage = new FindTaskPackage();
+        AppPackage appPackage = new AppPackage();
+        appPackage.setDashboard(getDashboardPackage(userTask));
+        findTaskPackage.setAllTask(getAllTasks(userTask));
+        appPackage.setFindTaskPackage(findTaskPackage);
+
+        System.out.println("__________\n"+getAllTasks(userTask));
+        return appPackage;
+    }
+
     public List<ToDoItem> findTaskGroup(GetProjectGroupReq getProjectGroupReq) throws Exception {
         List<ToDoItem> lists = new ArrayList<>();
         List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(getProjectGroupReq.getUserId());
@@ -193,7 +216,7 @@ public class TodoItemServiceImpl implements TodoItemService {
       List<ToDoItem> list =  todoItemRepo.findAllUserTask(userId);
       List<ToDoItem> todayTask = new ArrayList<>();
         for (ToDoItem item : list){
-            if (item.getDueDate().isEqual(LocalDate.now())){
+            if (item.getDueDate().isEqual(LocalDateTime.now())){
                 todayTask.add(item);
             }
         }
@@ -201,7 +224,7 @@ public class TodoItemServiceImpl implements TodoItemService {
     }
 
     public FindTasksResponse findByDate(String date, int userId) throws Exception {
-        LocalDate dateFormat = getDate(date);
+        LocalDateTime dateFormat = getDate(date);
         List<ToDoItem> itemFound = new ArrayList<>();
         List<ToDoItem> toDoItemList = todoItemRepo.findAllUserTask(userId);
         toDoItemList
@@ -214,12 +237,12 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     @Override
     public void updateAll(UpdateAllRequest updateAllRequest) throws Exception {
-        HashMap<String, String>  get = updateAllRequest.getRequestMap();
+        HashMap<String, String>  getUpdate = updateAllRequest.getRequestMap();
         ToDoItem task = taskBy_StartDate_EndDate_TaskType(
                 updateAllRequest.getUserId(),
-                getDate(get.get("startDate")),
-                getDate(get.get("endDate")),
-                verifyEnum(get.get("taskType"), userService.findUserById(updateAllRequest.getUserId())));
+                getDate(getUpdate.get("startDate")),
+                getDate(getUpdate.get("dueDate")),
+                verifyEnum(getUpdate.get("taskType"), userService.findUserById(updateAllRequest.getUserId())));
         if (task!=null) {
             if (!task.isCompleted()) {
                 ToDoItem item = updateAllMap.updateFromMap(updateAllRequest.getRequestMap(), task);
@@ -228,8 +251,8 @@ public class TodoItemServiceImpl implements TodoItemService {
         }
     }
     ToDoItem taskBy_StartDate_EndDate_TaskType(int userId,
-                                                         LocalDate s,
-                                                         LocalDate e,
+                                                         LocalDateTime s,
+                                                         LocalDateTime e,
                                                          String type) throws Exception {
         List<ToDoItem> task = todoItemRepo.findAllUserTask(userId);
         final ToDoItem[] taskFound = new ToDoItem[1];

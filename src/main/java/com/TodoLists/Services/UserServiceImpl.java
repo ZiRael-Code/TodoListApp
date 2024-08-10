@@ -67,10 +67,8 @@ public class UserServiceImpl implements UserServiceRepo {
         User user = userRepo.findByUsername(username);
         if (user!=null){
             List<Notification> notifications = user.getMyNotification();
-
            List<Notification> dueDate = notificationServie.closeToDueDate(user.getMyTask());
             notifications.add(dueDate.stream().iterator().next());
-
             List<Notification> startDate = notificationServie.closeToStartDate(user.getMyTask());
             notifications.add(startDate.stream().iterator().next());
             user.setMyNotification(notifications);
@@ -123,5 +121,9 @@ public class UserServiceImpl implements UserServiceRepo {
     public MyNotification myNotifications(int id) throws Exception {
         User user = findUserById(id);
         return new MyNotification(user.getMyNotification());
+    }
+
+    public static void main(String[] args) {
+        
     }
 }
