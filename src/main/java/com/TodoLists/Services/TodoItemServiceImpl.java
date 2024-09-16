@@ -9,7 +9,7 @@ import com.TodoLists.DTOs.UpdateAllMap;
 import com.TodoLists.Data.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -36,17 +36,22 @@ public class TodoItemServiceImpl implements TodoItemService {
     public List<ToDoItem> getAllTasks(int userId) throws Exception {
         List<ToDoItem> allTask = todoItemRepo.findAllUserTask(userId);
         for (ToDoItem item : allTask) {
-            if (item.getStartDate().isBefore(LocalDateTime.now())) {
+            if (item.getStartDate().isAfter(LocalDateTime.now())) {
+                // Start time is in the future
                 item.setTaskStatus(TaskStatus.TODO);
-            } else if (item.getStartDate().isEqual(LocalDateTime.now())) {
+            } else if (item.getStartDate().isBefore(LocalDateTime.now()) && item.getDueDate().isAfter(LocalDateTime.now())) {
+                // Start time is in the past and end time is in the future
                 item.setTaskStatus(TaskStatus.INPROGRESS);
-            } else if (item.getStartDate().isAfter(LocalDateTime.now())) {
+            } else if (item.getDueDate().isBefore(LocalDateTime.now())) {
+                // End time is in the past
                 item.setTaskStatus(TaskStatus.COMPLETED);
             }
             todoItemRepo.save(item);
         }
         return todoItemRepo.findAllUserTask(userId);
     }
+
+
 
 
     @Override
@@ -67,7 +72,7 @@ public class TodoItemServiceImpl implements TodoItemService {
             newTask.setDescription(addReq.getDescription());
             newTask.setPriority(Priority.valueOf(addReq.getPriority()));
             newTask.setStartDate(getDate(addReq.getStartDate()));
-            LocalDateTime date = getDate(addReq.getDueDate());
+            LocalDateTime date = getDate(addReq.getEndDate());
             newTask.setDueDate(date);
             newTask.setUserId(addReq.getUserId());
 //            LocalDateTime time = stripRealTimerFromTimerType();
@@ -111,6 +116,18 @@ public class TodoItemServiceImpl implements TodoItemService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         return LocalDateTime.parse(date, formatter);
     }
+
+    public static void main(String[] args) {
+        String date = "2024-08-14T17:59";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime dates = LocalDateTime.parse(date, formatter);
+        System.out.println(dates);
+        //
+//        String time = "05:16";
+//        DateTimeFormatter formatters = DateTimeFormatter.ofPattern("HH:mm");
+//        System.out.println(LocalDate.now());
+    }
+
 
     public ToDoItem getTask(int taskId, int userId) throws Exception {
 

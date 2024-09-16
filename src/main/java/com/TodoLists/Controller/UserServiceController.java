@@ -105,10 +105,10 @@ public class UserServiceController {
     }
 
     @PostMapping("/addTask")
-    public ResponseEntity<AddTaskResponse> addTask(@RequestBody AddTaskRequest addTaskRequest){
+    public String addTask(@RequestBody AddTaskRequest addTaskRequest){
         try{
             todoItemService.addTask(addTaskRequest);
-            return ResponseEntity.ok().body(new AddTaskResponse("task added successful"));
+            return "{\"task added successful\"}";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
