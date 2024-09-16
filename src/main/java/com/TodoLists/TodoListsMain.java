@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 @SpringBootApplication
@@ -17,32 +18,30 @@ public class TodoListsMain implements CommandLineRunner{
     @Override
     public void run(String... args) throws Exception {
 
-        File file = new File(FILENAME);
-
-        if (!file.exists()) {
-            File parentDir = file.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
+        try {
+            File file = new File(FILENAME);
+            if (!file.exists()) {
+                file.createNewFile();
             }
-           boolean fileCreated =  file.createNewFile();
-//            if (!fileCreated){
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        File file = new File(FILENAME);
 //
+//        if (!file.exists()) {
+//            File parentDir = file.getParentFile();
+//            if (parentDir != null && !parentDir.exists()) {
+//                parentDir.mkdirs();
 //            }
-
-
-        }
-
-
-
-
-
-
-
-
-        Path path = Path.of(FILENAME);
-        if (!Files.exists(path)) {
-            Files.createFile(path);
-        }
+//
+//
+//        }
+//
+//        Path path = Path.of(FILENAME);
+//        if (!Files.exists(path)) {
+//            Files.createFile(path);
+//        }
     }
 
     }
