@@ -5,6 +5,7 @@ import com.TodoLists.TodoListsMain;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,8 @@ public class UserRepoImpl implements UserRepo {
                 throw new Exception("Error: " + e.getMessage());
             }
         }else {
-            throw new RuntimeException("File not created");
+            Files.createFile(Path.of(FILENAME));
+            throw new RuntimeException("File just created try again");
         }
     }
         @Override
