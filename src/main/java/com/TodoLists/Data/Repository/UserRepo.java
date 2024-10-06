@@ -7,7 +7,7 @@ import java.util.List;
 @Repository
 public interface UserRepo {
     List<User> findAll() throws Exception;
-    void writeToObject(List<User> users) throws Exception;
+    User writeToObject(List<User> users) throws Exception;
     User save(User user) throws Exception;
     User findByUsername(String username) throws Exception;
     User findByUsernameAndPassword(String username, String password) throws Exception;

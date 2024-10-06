@@ -24,7 +24,7 @@ class TodoItemRepoImpli implements TodoItemRepo{
         return null;
     }
 
-    public void  save(ToDoItem task) throws Exception {
+    public ToDoItem save(ToDoItem task) throws Exception {
         ToDoItem task1 = task;
         User user1 = userRepo.findById(task1.getUserId());
         List<ToDoItem> items = user1.getMyTask();
@@ -51,8 +51,9 @@ class TodoItemRepoImpli implements TodoItemRepo{
             items.set(indexoF, task1);
         }
         user1.setMyTask(items);
-        userRepo.save(user1);
         System.out.println(items.get(items.size()-1).getTodoItemId());
+//        userRepo.save(user1);
+        return items.get(items.size()-1);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.TodoLists.Services;
 
 import com.TodoLists.DTOs.Response.LoginResponse;
+import com.TodoLists.Data.Model.TaskType;
 import com.TodoLists.Data.Model.User;
 import com.TodoLists.DTOs.Request.CreateUserRequest;
 import com.TodoLists.DTOs.Request.LoginRequest;
@@ -10,7 +11,11 @@ import com.TodoLists.Data.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @Service
 public class UserServiceImpl implements UserServiceRepo {
     @Autowired
@@ -34,6 +39,15 @@ public class UserServiceImpl implements UserServiceRepo {
         List<Notification> notifications = user1.getMyNotification();
         notifications.add(notificationServie.newUser(createUserRequest.getUsername()));
         user1.setMyNotification(notifications);
+        List<Map<String , String>> category = user1.getTaskCategory();
+        Arrays.stream(TaskType.values()).forEach(taskType1 -> {
+            Map<String, String> type = new HashMap<>();
+            type.put("typeName",taskType1.toString());
+            type.put("color",null);
+            type.put("icon",null);
+            category.add(type);
+        });
+        user1.setTaskCategory(category);
         User user2 = userRepo.save(user1);
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setId(user2.getId());

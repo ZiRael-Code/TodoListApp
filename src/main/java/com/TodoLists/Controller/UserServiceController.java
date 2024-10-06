@@ -202,14 +202,13 @@ public class UserServiceController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
 //    @GetMapping("/getDashboard/{userId}")
 //    public DashBoardResponse mobileDashboardMobile(@PathVariable("userId") int userId){
 //        try{
-//
-//
 //        } catch (Exception e) {
 //            throw new RuntimeException(e.getMessage());
 //        }
-//    }
+//   }
 
 }

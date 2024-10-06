@@ -75,16 +75,20 @@ public class TodoItemServiceImpl implements TodoItemService {
             LocalDateTime date = getDate(addReq.getEndDate());
             newTask.setDueDate(date);
             newTask.setUserId(addReq.getUserId());
-//            LocalDateTime time = stripRealTimerFromTimerType();
-
-            newTask.setTaskType(verifyEnum(addReq.getTaskType().strip().replace(' ', '_'), userService.findUserById(addReq.getUserId())));
+            newTask.setTaskType(verifyEnum(addReq.getTaskType(), userService.findUserById(addReq.getUserId())).get("typeName"));
             List<Notification> notifications = user11.getMyNotification();
             Notification notification = notificationServie.newTask(user11.getUsername(), newTask);
             notifications.add(notification);
-            System.out.println("The notification is " + notification);
+//            System.out.println("The notification is " + notification);
             user11.setMyNotification(notifications);
+
+           ToDoItem item = todoItemRepo.save(newTask);
+           List<ToDoItem> task = user11.getMyTask();
+           task.add(item);
+           user11.setMyTask(task);
+            System.out.println("just addit to user in todo impli before"+user11);
             userRepo.save(user11);
-            todoItemRepo.save(newTask);
+
         } else {
             throw new Exception("User not logged in ");
         }
@@ -95,21 +99,35 @@ public class TodoItemServiceImpl implements TodoItemService {
         return null;
     }
 
-    public String verifyEnum(String enumC,User user) throws Exception {
-        List<String> taskType = user.getTaskCategory();
-        Arrays.stream(TaskType.values()).forEach(taskType1 -> taskType.add(taskType1.toString()));
-        return taskType.stream().toList()
-              .stream().toString().equals(enumC) ? TaskType.valueOf(enumC).toString()
-              : addingToTasType(enumC, user);
+    public Map<String, String> verifyEnum(Map<String, String> enumC, User user) throws Exception {
+        List<Map<String, String>> taskType = user.getTaskCategory();
+        System.out.println("________________________________'\ncomparing ternary place");
+        var index = -1;
+        for (Map<String,String> type: taskType) {
+            if (type.get("typeName").equals(enumC.get("typeName"))){
+                index = 1;
+                break;
+            }
+        }
+        if (index == 1){
+            return enumC;
+        }else {
+            System.out.println("__________\nit is not found in the category of task type so adding");
+            return addingToTaskType(enumC, user);
+        }
+//        return taskType
+//              .stream().allMatch(x-> x.get("typeName").equals(enumC.get("typeName"))) ? enumC
+//              : ;
     }
 
 
-    public  String addingToTasType(String addableEnum, User userId) throws Exception {
-        List<String> added = userId.getTaskCategory();
-        added.add(addableEnum.toUpperCase().strip().replace(' ', '-'));
+    public   Map<String, String> addingToTaskType(Map<String, String> addableEnum, User userId) throws Exception {
+        List<Map<String, String>> added = userId.getTaskCategory();
+        added.add(addableEnum);
         userId.setTaskCategory(added);
-        userRepo.save(userId);
-        return added.get(added.size()-1);
+        User user = userRepo.save(userId);
+//        System.out.println(user + "__________________\n added task type successful");
+        return added.get(added.size() - 1);
     }
 
     public static LocalDateTime getDate(String date) {
@@ -150,14 +168,19 @@ public class TodoItemServiceImpl implements TodoItemService {
         List<HashMap<String, String>> lists = new ArrayList<>();
         List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(userTask);
         Dashboard dashboard = new Dashboard();
-        List<String> taskType = userService.findUserById(userTask).getTaskCategory();
-        Arrays.stream(TaskType.values()).forEach(taskType1 -> taskType.add(taskType1.toString()));
+        List<Map<String, String>>  taskType = userService.findUserById(userTask).getTaskCategory();
 
-        for (String s : taskType) {
+        Arrays.stream(TaskType.values()).forEach(taskType1 -> {
+            Map<String, String> type = new HashMap<>();
+            type.put("typeName",taskType1.toString());
+            taskType.add(type);
+        });
+
+        for (Map<String, String> s : taskType) {
 //            List<ToDoItem> items = new ArrayList<>();
             int itemSize = 0;
             HashMap<String, String> value = new HashMap<>();
-            String projName =s;
+            String projName =s.get("typeName");
             int  completedTaskInProj = 0;
             for (ToDoItem toDoItem : toDoItems) {
                 if (toDoItem.getTaskType().equals(s)) {
@@ -254,18 +277,18 @@ public class TodoItemServiceImpl implements TodoItemService {
 
     @Override
     public void updateAll(UpdateAllRequest updateAllRequest) throws Exception {
-        HashMap<String, String>  getUpdate = updateAllRequest.getRequestMap();
-        ToDoItem task = taskBy_StartDate_EndDate_TaskType(
-                updateAllRequest.getUserId(),
-                getDate(getUpdate.get("startDate")),
-                getDate(getUpdate.get("dueDate")),
-                verifyEnum(getUpdate.get("taskType"), userService.findUserById(updateAllRequest.getUserId())));
-        if (task!=null) {
-            if (!task.isCompleted()) {
-                ToDoItem item = updateAllMap.updateFromMap(updateAllRequest.getRequestMap(), task);
-                todoItemRepo.save(item);
-            }
-        }
+//        HashMap<String, String>  getUpdate = updateAllRequest.getRequestMap();
+//        ToDoItem task = taskBy_StartDate_EndDate_TaskType(
+//                updateAllRequest.getUserId(),
+//                getDate(getUpdate.get("startDate")),
+//                getDate(getUpdate.get("dueDate")),
+//                verifyEnum(getUpdate.get("taskType"), userService.findUserById(updateAllRequest.getUserId())));
+//        if (task!=null) {
+//            if (!task.isCompleted()) {
+//                ToDoItem item = updateAllMap.updateFromMap(updateAllRequest.getRequestMap(), task);
+//                todoItemRepo.save(item);
+//            }
+//        }
     }
     ToDoItem taskBy_StartDate_EndDate_TaskType(int userId,
                                                          LocalDateTime s,

@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
+import java.beans.Transient;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 @Data
 @JsonDeserialize
 @JsonSerialize
@@ -22,8 +25,16 @@ public class User implements Serializable {
     private List<ToDoItem> myTask = new ArrayList<>();
     private int currentId = -1;
     private List<Notification> myNotification = new ArrayList<>();
-    private List<String> taskCategory = new ArrayList<>();
+//    @JsonDeserialize
+//    @JsonSerialize
+    private List<Map<String, String>> taskCategory = new ArrayList<>();
 
-
-
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", taskCategory=" + taskCategory +
+                '}';
+    }
 }

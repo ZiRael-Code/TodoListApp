@@ -8,7 +8,7 @@ import java.util.List;
 @Repository
 public interface TodoItemRepo {
     ToDoItem findTask(int taskId, int userId) throws Exception;
-    void save(ToDoItem task) throws Exception;
+    ToDoItem save(ToDoItem task) throws Exception;
     void deleteAll(int userId) throws Exception;
     ToDoItem findById(int taskId, int userId) throws Exception;
     List<ToDoItem> findAllUserTask( int userId) throws Exception;

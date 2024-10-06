@@ -38,8 +38,6 @@ public class UserRepoImpl implements UserRepo {
         List<User> findAllUsers = new ArrayList<>();
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(FILENAME))) {
                 findAllUsers = (List<User>) objectInputStream.readObject();
-
-
         } catch (EOFException e) {
            return findAllUsers;
         } catch (IOException | ClassNotFoundException e) {
@@ -50,10 +48,10 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User save(User user) throws Exception {
+        System.out.println("__________________\nhere is the user you gave to me"+ user);
 //        ver = new Ver<>();
        List<User> saveUsers = findAll();
-       User user1 = user;
-//       user1.setId(userId);
+        //       user1.setId(userId);
        int indexoF = -1;
         for (User u:saveUsers  ) {
             if (u.getId() == user.getId()){
@@ -69,26 +67,29 @@ public class UserRepoImpl implements UserRepo {
                 lol =  saveUsers.get(saveUsers.size()-1).getId();
             }
             lol+=1;
-            user1.setId(lol);
+            user.setId(lol);
             saveUsers.add(user);
 //            userId++;
 
         }else {
-            saveUsers.set(indexoF, user1);
+            saveUsers.set(indexoF, user);
         }
+        User u = writeToObject(saveUsers);
+        System.out.println("__________________\nsaving user successfully"+ u);
 
-        writeToObject(saveUsers);
-        return user1;
+        return u;
     }
 
-    public void writeToObject(List<User> users) throws Exception {
+    public User writeToObject(List<User> users) throws Exception {
         if (Path.of(FILENAME).isAbsolute()) {
             try (ObjectOutputStream objectInputStream
                          = new ObjectOutputStream(new FileOutputStream(FILENAME))) {
                 objectInputStream.writeObject(users);
+                return !users.isEmpty() ? findAll().get(findAll().size() - 1) : null;
             } catch (IOException e) {
                 throw new Exception("Error: " + e.getMessage());
             }
+
         }else {
             Files.createFile(Path.of(FILENAME));
             throw new RuntimeException("File just created try again");
