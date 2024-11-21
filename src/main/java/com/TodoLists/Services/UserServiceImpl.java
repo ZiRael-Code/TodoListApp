@@ -1,12 +1,10 @@
 package com.TodoLists.Services;
 
 import com.TodoLists.DTOs.Response.LoginResponse;
-import com.TodoLists.Data.Model.TaskType;
-import com.TodoLists.Data.Model.User;
+import com.TodoLists.Data.Model.*;
 import com.TodoLists.DTOs.Request.CreateUserRequest;
 import com.TodoLists.DTOs.Request.LoginRequest;
 import com.TodoLists.DTOs.Response.MyNotification;
-import com.TodoLists.Data.Model.Notification;
 import com.TodoLists.Data.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +49,7 @@ public class UserServiceImpl implements UserServiceRepo {
         User user2 = userRepo.save(user1);
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setId(user2.getId());
+        loginResponse.setEmail(user2.getEmail());
         return loginResponse;
     }
 
@@ -69,9 +68,8 @@ public class UserServiceImpl implements UserServiceRepo {
             loginResponse.setMessage("Login Successful");
             loginResponse.setLoginStatus(user1.isEnable());
             loginResponse.setUsername(user1.getUsername());
+            loginResponse.setEmail(user1.getEmail());
             return loginResponse;
-
-
         }else {
             throw new RuntimeException("User name or password not correct");
         }
@@ -110,11 +108,24 @@ public class UserServiceImpl implements UserServiceRepo {
            notifications.addAll(close);
            notifications.addAll(start);
            user.setMyNotification(notifications);
-           User afters = userRepo.save(user);
-           System.out.println(afters.getId()+" User id after save");
+//           User afters = userRepo.save(user);
+//           System.out.println(afters.getId()+" User id after save");
 
        }
-        return user;
+       List<ToDoItem> todoList =  user.getMyTask();
+       for (ToDoItem item :todoList){
+          if (TodoItemServiceImpl.checkIfItInProgress(item)){
+              item.setTaskStatus(TaskStatus.INPROGRESS);
+              todoList.set(todoList.indexOf(item), item);
+
+          }else if (TodoItemServiceImpl.checkIfItCompleted(item)){
+               item.setTaskStatus(TaskStatus.COMPLETED);
+               todoList.set(todoList.indexOf(item), item);
+           }
+       }
+       user.setMyTask(todoList);
+
+        return userRepo.save(user);
     }
 
     @Override

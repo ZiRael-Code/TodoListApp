@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class LoginResponse {
 private int id;
 private String message;
+private String email;
 private boolean loginStatus;
 private String username;
 

@@ -1,6 +1,8 @@
 package com.TodoLists.Services;
 
 import com.TodoLists.DTOs.Response.AppPackage;
+import com.TodoLists.DTOs.Response.MobileNavPackage;
+import com.TodoLists.DTOs.Response.TodayTask;
 import com.TodoLists.Data.Repository.TodoItemRepo;
 import com.TodoLists.DTOs.Request.*;
 import com.TodoLists.DTOs.Response.FindTasksResponse;
@@ -10,7 +12,9 @@ import com.TodoLists.Data.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -75,18 +79,25 @@ public class TodoItemServiceImpl implements TodoItemService {
             LocalDateTime date = getDate(addReq.getEndDate());
             newTask.setDueDate(date);
             newTask.setUserId(addReq.getUserId());
-            newTask.setTaskType(verifyEnum(addReq.getTaskType(), userService.findUserById(addReq.getUserId())).get("typeName"));
             List<Notification> notifications = user11.getMyNotification();
             Notification notification = notificationServie.newTask(user11.getUsername(), newTask);
             notifications.add(notification);
 //            System.out.println("The notification is " + notification);
             user11.setMyNotification(notifications);
+            List<Map<String, String>> types = user11.getTaskCategory();
+            if ((verifyEnum(addReq.getTaskType(),
+                    userService.findUserById(addReq.getUserId())))){
+                newTask.setTaskType(addReq.getTaskType().get("typeName"));
+            }else {
+                newTask.setTaskType(addReq.getTaskType().get("typeName"));
+                types.add(addReq.getTaskType());
+            }
 
            ToDoItem item = todoItemRepo.save(newTask);
            List<ToDoItem> task = user11.getMyTask();
            task.add(item);
            user11.setMyTask(task);
-            System.out.println("just addit to user in todo impli before"+user11);
+            System.out.println("+++++++=-)(((*&^(just addit to user in todo impli before"+user11);
             userRepo.save(user11);
 
         } else {
@@ -99,9 +110,8 @@ public class TodoItemServiceImpl implements TodoItemService {
         return null;
     }
 
-    public Map<String, String> verifyEnum(Map<String, String> enumC, User user) throws Exception {
+    public boolean verifyEnum(Map<String, String> enumC, User user) throws Exception {
         List<Map<String, String>> taskType = user.getTaskCategory();
-        System.out.println("________________________________'\ncomparing ternary place");
         var index = -1;
         for (Map<String,String> type: taskType) {
             if (type.get("typeName").equals(enumC.get("typeName"))){
@@ -110,14 +120,15 @@ public class TodoItemServiceImpl implements TodoItemService {
             }
         }
         if (index == 1){
-            return enumC;
+            return true;
         }else {
-            System.out.println("__________\nit is not found in the category of task type so adding");
-            return addingToTaskType(enumC, user);
+           taskType.add(enumC);
+           user.setTaskCategory(taskType);
+          User ac = userRepo.save(user);
+            System.out.println("saved userd_+_+_+__+_+_+_)/0" + ac);
+
+            return false;
         }
-//        return taskType
-//              .stream().allMatch(x-> x.get("typeName").equals(enumC.get("typeName"))) ? enumC
-//              : ;
     }
 
 
@@ -127,6 +138,7 @@ public class TodoItemServiceImpl implements TodoItemService {
         userId.setTaskCategory(added);
         User user = userRepo.save(userId);
 //        System.out.println(user + "__________________\n added task type successful");
+        userRepo.save(user);
         return added.get(added.size() - 1);
     }
 
@@ -165,68 +177,164 @@ public class TodoItemServiceImpl implements TodoItemService {
     }
 
     public Dashboard getDashboardPackage(int userTask) throws Exception {
-        List<HashMap<String, String>> lists = new ArrayList<>();
-        List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(userTask);
         Dashboard dashboard = new Dashboard();
-        List<Map<String, String>>  taskType = userService.findUserById(userTask).getTaskCategory();
 
-        Arrays.stream(TaskType.values()).forEach(taskType1 -> {
-            Map<String, String> type = new HashMap<>();
-            type.put("typeName",taskType1.toString());
-            taskType.add(type);
-        });
+        User user = userService.findUserById(userTask);
+        List<Map<String, String>> groupedTasks = new ArrayList<Map<String, String>>();
+        int completedTaskInProj = 0;
 
-        for (Map<String, String> s : taskType) {
-//            List<ToDoItem> items = new ArrayList<>();
+        for (Map<String, String> taskType : user.getTaskCategory()){
+            Map<String, String> taskGroup = new HashMap<String, String>();
+            Map<String, String> taskTypeMap = taskType;
             int itemSize = 0;
-            HashMap<String, String> value = new HashMap<>();
-            String projName =s.get("typeName");
-            int  completedTaskInProj = 0;
-            for (ToDoItem toDoItem : toDoItems) {
-                if (toDoItem.getTaskType().equals(s)) {
+            for (ToDoItem toDoItem : user.getMyTask()) {
+                if (toDoItem.getTaskType().equalsIgnoreCase(taskType.get("typeName"))) {
                     itemSize++;
-//                    items.add(toDoItem);
-                    if (toDoItem.isCompleted()){
-                        completedTaskInProj+=1;
-                    }
+                }
+                if (toDoItem.isCompleted()){
+                    completedTaskInProj+=1;
                 }
             }
-            int completedTask;
-            try {
-                completedTask = (completedTaskInProj /itemSize)*100;
-            }catch (ArithmeticException a){
-                completedTask = 0;
-            }
+                taskGroup.put("typeName", taskTypeMap.get("typeName"));
+                taskGroup.put("color", taskTypeMap.get("color"));
+                taskGroup.put("icon", taskTypeMap.get("icon"));
+            taskGroup.put("taskSizeInProject", String.valueOf(itemSize));
+            groupedTasks.add(taskGroup);
+          }
+        dashboard.setTotalCompleted(completedTaskInProj);
+        dashboard.setGroupedTask(groupedTasks);
+//        dashboard.setTodayTask(getTodayTask(userTask));
+        dashboard.setAllTasks(user.getMyTask());
 
-            value.put("taskSizeInProject", String.valueOf(itemSize));
-            value.put("totalCompletedTask", String.valueOf(completedTask));
-            value.put("projectName", projName.replace('_',' '));
 
 
-            lists.add(value);
-        }
-
-        List<ToDoItem> todayItem = getTodayTask(userTask).getItems();
-        dashboard.setTodayItem(todayItem);
-        int totalSize = todayItem.size();
-        int[] completed = {1};
-        todayItem.forEach(x->{
-            if (x.isCompleted()){
-                completed[0]+=1;
-            }
-        });
-        dashboard.setArrangedItems(lists);
-        try {
-            int total = (completed[0] / totalSize) * 100;
-            dashboard.setTotalCompleted(total);
-        }catch (RuntimeException e){
-            dashboard.setTotalCompleted(0);
-        }
-
-//        dashboard.setItemsGroups(Arrays.stream(TaskType.values()).map(x->String.valueOf(x).replace('_', ' ')).toList());
+        //        List<HashMap<String, String>> lists = new ArrayList<>();
+//        List<ToDoItem> toDoItems = todoItemRepo.findAllUserTask(userTask);
+//        Dashboard dashboard = new Dashboard();
+//        List<Map<String, String>>  taskType = userService.findUserById(userTask).getTaskCategory();
+//
+//        Arrays.stream(TaskType.values()).forEach(taskType1 -> {
+//            Map<String, String> type = new HashMap<>();
+//            type.put("typeName",taskType1.toString());
+//            taskType.add(type);
+//        });
+//
+//        for (Map<String, String> s : taskType) {
+////            List<ToDoItem> items = new ArrayList<>();
+//            int itemSize = 0;
+//            HashMap<String, String> value = new HashMap<>();
+//            String projName =s.get("typeName");
+//            int  completedTaskInProj = 0;
+//            for (ToDoItem toDoItem : toDoItems) {
+//                if (toDoItem.getTaskType().equals(s)) {
+//                    itemSize++;
+////                    items.add(toDoItem);
+//                    if (toDoItem.isCompleted()){
+//                        completedTaskInProj+=1;
+//                    }
+//                }
+//            }
+//            int completedTask;
+//            try {
+//                completedTask = (completedTaskInProj /itemSize)*100;
+//            }catch (ArithmeticException a){
+//                completedTask = 0;
+//            }
+//
+//            value.put("taskSizeInProject", String.valueOf(itemSize));
+//            value.put("totalCompletedTask", String.valueOf(completedTask));
+//            value.put("projectName", projName.replace('_',' '));
+//
+//
+//            lists.add(value);
+//        }
+//
+//        List<ToDoItem> todayItem = getTodayTask(userTask).getItems();
+//        dashboard.setTodayItem(todayItem);
+//        int totalSize = todayItem.size();
+//        int[] completed = {1};
+//        todayItem.forEach(x->{
+//            if (x.isCompleted()){
+//                completed[0]+=1;
+//            }
+//        });
+//        dashboard.setGroupedTask(lists);
+//        try {
+//            int total = (completed[0] / totalSize) * 100;
+//            dashboard.setTotalCompleted(total);
+//        }catch (RuntimeException e){
+//            dashboard.setTotalCompleted(0);
+//        }
+//
+////        dashboard.setItemsGroups(Arrays.stream(TaskType.values()).map(x->String.valueOf(x).replace('_', ' ')).toList());
 
         return dashboard;
     }
+
+    public List<ToDoItem> getInProgressTask(int id) throws Exception {
+        User user = userService.findUserById(id);
+        List<ToDoItem> lists = new ArrayList<>();
+        List<ToDoItem> toDoItems = user.getMyTask();
+
+        for (ToDoItem toDoItem : toDoItems) {
+            if (checkIfItInProgress(toDoItem)){
+                lists.add(toDoItem);
+                toDoItem.setTaskStatus(TaskStatus.INPROGRESS);
+                toDoItems.set(toDoItems.indexOf(toDoItem), toDoItem);
+            }
+        }
+        user.setMyTask(toDoItems);
+        userRepo.save(user);
+
+        return lists;
+    }
+
+    public static boolean checkIfItCompleted(ToDoItem toDoItem){
+        LocalDateTime now = LocalDateTime.now();
+        LocalTime nowTime = LocalTime.now();
+        LocalDateTime fullDateTime = toDoItem.getStartDate();
+        LocalDate startDate = fullDateTime.toLocalDate();
+        LocalTime startTime = fullDateTime.toLocalTime();
+
+        LocalDate endDate = toDoItem.getDueDate().toLocalDate(); // Example assumption
+        LocalTime endTime = toDoItem.getDueDate().toLocalTime(); // Example assumption
+
+        if (startDate.isEqual(endDate)) {
+            // Check if the start time equals the end time
+            if (startTime == endTime) {
+                // Check if the start time, end time, and current time (now) are equal
+                if (startTime.equals(nowTime)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkIfItInProgress(ToDoItem toDoItem){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime fullDateTime = toDoItem.getStartDate();
+        LocalDate startDate = fullDateTime.toLocalDate();
+        LocalTime startTime = fullDateTime.toLocalTime();
+
+        LocalDate endDate = toDoItem.getDueDate().toLocalDate(); // Example assumption
+        LocalTime endTime = toDoItem.getDueDate().toLocalTime(); // Example assumption
+
+        if (startDate.isBefore(now.toLocalDate()) || startDate.isEqual(now.toLocalDate())) {
+            // Check if the start time is now or has passed
+            if (startTime.isBefore(now.toLocalTime()) || startTime.equals(now.toLocalTime())) {
+                // Check if the start time is not equal to or has not passed the end time
+                if (startTime.isBefore(endTime)) {
+                    // Check if the start date is not equal to or has not passed the end date
+                    if (startDate.isBefore(endDate)) {
+                        return true; // All conditions met
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public AppPackage getAppPackage(int userTask) throws Exception {
@@ -236,7 +344,6 @@ public class TodoItemServiceImpl implements TodoItemService {
         findTaskPackage.setAllTask(getAllTasks(userTask));
         appPackage.setFindTaskPackage(findTaskPackage);
 
-        System.out.println("__________\n"+getAllTasks(userTask));
         return appPackage;
     }
 
@@ -255,8 +362,15 @@ public class TodoItemServiceImpl implements TodoItemService {
     public FindTasksResponse getTodayTask(int userId) throws Exception {
       List<ToDoItem> list =  todoItemRepo.findAllUserTask(userId);
       List<ToDoItem> todayTask = new ArrayList<>();
+
         for (ToDoItem item : list){
-            if (item.getDueDate().isEqual(LocalDateTime.now())){
+            LocalDate now = LocalDate.now();
+            LocalDateTime fullDateTime = item.getStartDate();
+            LocalDate startDate = fullDateTime.toLocalDate();
+            LocalDate endDate = item.getDueDate().toLocalDate();
+
+            if (startDate.isBefore(now) || startDate.isEqual(now)
+                    && startDate.isBefore(endDate)) {
                 todayTask.add(item);
             }
         }
@@ -290,6 +404,19 @@ public class TodoItemServiceImpl implements TodoItemService {
 //            }
 //        }
     }
+
+    @Override
+    public MobileNavPackage getMobileNavPackage(int id) throws Exception {
+        MobileNavPackage mobileNavPackage = new MobileNavPackage();
+        mobileNavPackage.setDashboard(getDashboardPackage(id));
+        mobileNavPackage.setTodayTask(getTodayTaskPackage(id));
+        return mobileNavPackage;
+    }
+
+    private TodayTask getTodayTaskPackage(int id) {
+        return null;
+    }
+
     ToDoItem taskBy_StartDate_EndDate_TaskType(int userId,
                                                          LocalDateTime s,
                                                          LocalDateTime e,

@@ -1,6 +1,7 @@
 package com.TodoLists.Services;
 
 import com.TodoLists.DTOs.Response.AppPackage;
+import com.TodoLists.DTOs.Response.MobileNavPackage;
 import com.TodoLists.Data.Model.ToDoItem;
 import com.TodoLists.DTOs.Request.*;
 import com.TodoLists.DTOs.Response.FindTasksResponse;
@@ -28,4 +29,5 @@ void updateTitle(UpdateTask updateTask) throws Exception ;
     FindTasksResponse findByDate(String date, int userId) throws Exception;
     void updateAll(UpdateAllRequest updateAllRequest) throws Exception;
 
+    MobileNavPackage getMobileNavPackage(int id) throws Exception;
 }

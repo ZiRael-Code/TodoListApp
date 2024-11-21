@@ -1,11 +1,14 @@
 package com.TodoLists.Services;
 
 import com.TodoLists.DTOs.Response.LoginResponse;
+import com.TodoLists.Data.Model.ToDoItem;
 import com.TodoLists.Data.Model.User;
 import com.TodoLists.DTOs.Request.CreateUserRequest;
 import com.TodoLists.DTOs.Request.LoginRequest;
 import com.TodoLists.DTOs.Response.MyNotification;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface UserServiceRepo {
@@ -20,4 +23,5 @@ public interface UserServiceRepo {
 
 
     MyNotification myNotifications(int id) throws Exception;
+
 }

@@ -10,8 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 @SpringBootApplication
 public class TodoListsMain implements CommandLineRunner{
-//    public static final String FILENAME = System.getenv("FILE_PATH");
-    public static final String FILENAME = "C:\\Users\\Israel\\Desktop\\TodoListApp\\src\\main\\java\\user";
+    public static final String FILENAME = System.getenv("FILE_PATH");
+//    public static final String FILENAME = "C:\\Users\\olade\\MyFile\\TodoListApp\\src\\main\\java\\com\\TodoLists\\user";
 
     public static void main(String[] args) {
         SpringApplication.run(TodoListsMain.class, args);

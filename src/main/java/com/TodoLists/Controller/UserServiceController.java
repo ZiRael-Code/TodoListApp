@@ -22,12 +22,15 @@ public class UserServiceController {
     @Autowired
     private TodoItemService todoItemService;
     @PostMapping("/createAccount")
-    public ResponseEntity<String> createAccount(@RequestBody CreateUserRequest createUserRequest){
+    public ResponseEntity<LoginResponse> createAccount(@RequestBody CreateUserRequest createUserRequest){
+        LoginResponse lr =  new LoginResponse();
         try{
-            userService.createAccount(createUserRequest);
-            return ResponseEntity.ok().body("Account Created");
+            lr = userService.createAccount(createUserRequest);
+            return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
-            return  ResponseEntity.badRequest().body("Error: "+e.getMessage());
+            lr.setMessage(e.getMessage());
+            lr.setId(-1);
+            return  ResponseEntity.badRequest().body(lr);
         }
     }
 
@@ -61,6 +64,16 @@ public class UserServiceController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @GetMapping("/getMobileNavPackage/{id}")
+    public ResponseEntity<MobileNavPackage> getMobileNavPackage(@PathVariable("id") int id){
+        try {
+            return ResponseEntity.ok().body(todoItemService.getMobileNavPackage(id));
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     @GetMapping("/getAppPackage/{id}")
     public AppPackage getAppPackage(@PathVariable("id") int id){
         try {
@@ -72,6 +85,7 @@ public class UserServiceController {
 
     @GetMapping("/findUser")
     public void findUser(){
+
     }
     @GetMapping("/getMyNotification/{id}")
     public ResponseEntity<MyNotification> getMyNotification(@PathVariable("id") int id){
@@ -106,7 +120,8 @@ public class UserServiceController {
 
     @PostMapping("/addTask")
     public String addTask(@RequestBody AddTaskRequest addTaskRequest){
-        try{
+        try{//TODO check ur mf get dashboard it not getting typename etc color
+            //TODO check the get user and make it update the tasktype or just do it in the add task
             todoItemService.addTask(addTaskRequest);
             return "{\"task added successful\"}";
         } catch (Exception e) {
