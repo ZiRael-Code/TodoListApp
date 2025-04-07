@@ -17,7 +17,7 @@ public class TodoListsMain implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(TodoListsMain.class);
 
     // Initialize with default value
-    public static String FILENAME = "/tmp/user_data.txt";
+    public static String FILENAME = "/tmp/user_data";
 
     public static void main(String[] args) {
         SpringApplication.run(TodoListsMain.class, args);
