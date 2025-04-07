@@ -43,7 +43,7 @@ public class UserServiceController {
             LoginResponse loginResponse = new LoginResponse();
             loginResponse.setMessage(e.getMessage());
             loginResponse.setId(-1);
-            return  ResponseEntity.badRequest().body(loginResponse);
+            return  ResponseEntity.status(200).body(loginResponse);
         }
     }
 
