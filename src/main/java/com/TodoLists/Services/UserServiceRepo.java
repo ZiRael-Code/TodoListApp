@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface UserServiceRepo {
     LoginResponse logIn(LoginRequest loinRequest) throws Exception ;
-    void logOut(String username) throws Exception ;
+    void logOut(int id) throws Exception ;
 
     User findUserById(int userId) throws Exception;
 

@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Map;
 
 @Data
 @ToString
@@ -34,9 +35,9 @@ public class ToDoItem implements Serializable {
 
 //    @JsonIgnore
 
-//    @JsonProperty("dueDate")
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonProperty("dueDate")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", shape = JsonFormat.Shape.OBJECT)
     private LocalDateTime dueDate;
     //    @JsonIgnore
@@ -53,12 +54,15 @@ public class ToDoItem implements Serializable {
 @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm", shape = JsonFormat.Shape.OBJECT)
     private LocalDateTime createdDate;
 
+//    private LocalTime startTime
+
 
     private TaskStatus taskStatus;
     private Priority priority;
     private boolean completed = false;
     private String taskName;
-    private String taskType;
+    private Map<String, String> taskType;
+    private int progress;
 
 
     private int userId;
@@ -68,32 +72,8 @@ public class ToDoItem implements Serializable {
         this.createdDate = LocalDateTime.now();
     }
 
-    public static void main(String[] args) {
-        LocalTime startTime = LocalTime.of(11, 23);
-        LocalTime endTime = LocalTime.of(11, 30);
-        LocalDate startDate = LocalDate.of(2024, 8, 17);
-        LocalDate endDate = LocalDate.of(2024, 8, 18);
-
-        if ( startDate.equals(LocalDate.now()) || startDate.isBefore(LocalDate.now()) && endDate.isAfter(LocalDate.now())) {
-            System.out.println("it currently start day checking time now");
-            if ((startTime.equals(LocalTime.now()) || startTime.isBefore(LocalTime.now())) && endTime.isAfter(LocalTime.now())) {
-                System.out.println("It is currently in start time");
-            } else if (LocalTime.now().isBefore(startTime)) {
-                System.out.println("It is not yet time");
-            } else {
-                System.out.println("It has passed the start time and passed the end time");
-            }
-        } else if (LocalDate.now().isBefore(endDate)) {
-            System.out.println("it not yet date");
-        }else {
-            System.out.println("it has passed end date and passed the start");
-        }
 
 
-    long differenceInMinutes = Duration.between(startTime, endTime).toMinutes();
 
-        System.out.println("Time difference: " + differenceInMinutes + " minutes");
-
-    }
 
 }

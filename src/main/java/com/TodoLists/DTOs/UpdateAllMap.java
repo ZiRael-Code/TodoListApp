@@ -29,7 +29,7 @@ public class UpdateAllMap {
                             given.setPriority(Priority.valueOf(value.toString()));
                             break;
                          case "taskType":
-                            given.setTaskType(value.toString());
+//                            given.setTaskType(value.toString());
                             break;
                     }
                 }

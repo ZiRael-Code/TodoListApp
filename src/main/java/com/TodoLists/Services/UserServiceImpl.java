@@ -90,8 +90,8 @@ public class UserServiceImpl implements UserServiceRepo {
     }
 
     @Override
-    public void logOut(String username) throws Exception {
-        User user1 = findByUsername(username);
+    public void logOut(int id) throws Exception {
+        User user1 = findUserById(id);
         user1.setEnable(false);
         userRepo.save(user1);
     }

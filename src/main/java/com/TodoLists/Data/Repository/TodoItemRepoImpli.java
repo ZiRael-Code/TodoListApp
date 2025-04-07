@@ -51,6 +51,7 @@ class TodoItemRepoImpli implements TodoItemRepo{
             items.set(indexoF, task1);
         }
         user1.setMyTask(items);
+        userRepo.save(user1);
         System.out.println(items.get(items.size()-1).getTodoItemId());
 //        userRepo.save(user1);
         return items.get(items.size()-1);

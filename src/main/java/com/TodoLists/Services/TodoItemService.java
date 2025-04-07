@@ -13,7 +13,7 @@ import java.util.List;
 public interface TodoItemService {
 
 void updateTitle(UpdateTask updateTask) throws Exception ;
-    void markItemASComplete(int userId, int todoItemIds) throws Exception;
+    MobileNavPackage markItemASComplete(int userId, int todoItemIds) throws Exception;
     void addTask(AddTaskRequest addReq) throws Exception;
     ToDoItem getTask(int taskId, int userId) throws Exception;
 
@@ -25,8 +25,8 @@ void updateTitle(UpdateTask updateTask) throws Exception ;
     AppPackage getAppPackage(int userTask) throws Exception;
     List<ToDoItem> findTaskGroup(GetProjectGroupReq getProjectGroupReq) throws Exception;
 
-    FindTasksResponse getTodayTask(int userId) throws Exception;
-    FindTasksResponse findByDate(String date, int userId) throws Exception;
+//    FindTasksResponse getTodayTask(int userId) throws Exception;
+//    FindTasksResponse findByDate(String date, int userId) throws Exception;
     void updateAll(UpdateAllRequest updateAllRequest) throws Exception;
 
     MobileNavPackage getMobileNavPackage(int id) throws Exception;

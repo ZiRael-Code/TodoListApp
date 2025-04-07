@@ -95,26 +95,27 @@ public class UserServiceController {
         throw new RuntimeException(e.getMessage());
     }
     }
-    @GetMapping("/todayTasks/{id}")
-    public ResponseEntity<FindTasksResponse> getTodayTask(@PathVariable("id") int id){
-        try {
-            return ResponseEntity.ok().body(todoItemService.getTodayTask(id));
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-    @GetMapping("/findTask")
-    public void findTask(){
+//
+//    @GetMapping("/todayTasks/{id}")
+//    public ResponseEntity<FindTasksResponse> getTodayTask(@PathVariable("id") int id){
+//        try {
+//            return ResponseEntity.ok().body(todoItemService.getTodayTask(id));
+//        }catch (Exception e){
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
+//    @GetMapping("/findTask")
+//    public void findTask(){
+//
+//    }
 
-    }
-
-    @PostMapping("/logout/{username}")
-    public String logout(@PathVariable("username") String username){
+    @PostMapping("/logout/{id}")
+    public ResponseEntity<String> logout(@PathVariable("id") int id){
         try{
-            userService.logOut(username);
-            return "Login Successful";
+            userService.logOut(id);
+             return ResponseEntity.ok().body("logged out");
         } catch (Exception e) {
-            return "Error: "+e.getMessage();
+            return  ResponseEntity.ok().body("Error: "+e.getMessage());
         }
     }
 
@@ -188,26 +189,27 @@ public class UserServiceController {
         }
 }
 
-@PostMapping("/complete/{userId}/{todoItemIds}")
-    public String markItemASComplete(@PathVariable("userId") int userId,
-                                     @PathVariable("todoItemIds") int todoItemIds){
+
+@PostMapping("/markComplete/{userId}/{todoItemIds}")
+    public ResponseEntity<MobileNavPackage> markItemASComplete(@PathVariable("todoItemIds") int todoItemIds,
+                                     @PathVariable("userId") int userId){
     try {
-        todoItemService.markItemASComplete(userId,todoItemIds);
-        return "Completed Updated";
+        MobileNavPackage mobilePackage = todoItemService.markItemASComplete(userId,todoItemIds);
+        return ResponseEntity.ok().body(mobilePackage);
     }catch (Exception e){
-        return e.getMessage();
+        throw new RuntimeException(e.getMessage());
     }
     }
 
-    @GetMapping("/getTaskByDate/{date}/{userId}")
-    public ResponseEntity<FindTasksResponse> findTasksByDate
-            (@PathVariable("date") String date, @PathVariable("userId") int userId){
-        try{
-           return ResponseEntity.ok().body(todoItemService.findByDate(date, userId));
-        } catch (Exception e) {
-            return null;
-        }
-    }
+//    @GetMapping("/getTaskByDate/{date}/{userId}")
+//    public ResponseEntity<FindTasksResponse> findTasksByDate
+//            (@PathVariable("date") String date, @PathVariable("userId") int userId){
+//        try{
+//           return ResponseEntity.ok().body(todoItemService.findByDate(date, userId));
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
     @GetMapping("/getUser/{userId}")
     public User getUser(@PathVariable("userId") int userId){
