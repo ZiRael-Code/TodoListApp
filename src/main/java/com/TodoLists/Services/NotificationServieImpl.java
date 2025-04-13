@@ -67,7 +67,7 @@ public class NotificationServieImpl implements NotificationServie{
 
     Notification sendNotification(String message, String title){
         Notification notification = new Notification();
-        notification.setNotificationSender(String.format("From %s", ""));
+        notification.setFrom(String.format("From %s", "ZiReal Tech"));
         notification.setNotificationTitle(title);
         notification.setNotificationBody(message);
         return notification;

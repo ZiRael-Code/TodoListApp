@@ -12,9 +12,10 @@ public class Notification implements Serializable {
 //    private LocalDateTime timeSent;
     private String notificationTitle;
     private String notificationBody;
-    private String notificationSender;
+    private String from;
+    private LocalDateTime timeSent;
 
     public Notification(){
-//        timeSent = LocalDateTime.now();
+        timeSent = LocalDateTime.now();
     }
 }
