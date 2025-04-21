@@ -2,17 +2,21 @@ package com.TodoLists.Services;
 
 import com.TodoLists.Data.Model.ToDoItem;
 import com.TodoLists.Data.Model.Notification;
+import com.TodoLists.Data.Model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NotificationServie {
-    Notification newUser(String userName);
+    Map<String, List<Notification>> newUser(User user);
 
-    Notification newTask(String userName, ToDoItem task);
+    Map<String, List<Notification>> newTask(User user,  ToDoItem task);
 
-    Notification deleteTask(String userName, ToDoItem task);
+    Map<String, List<Notification>> deleteTask(User user, ToDoItem item);
 
     void completedTask(String taskName);
-    List<Notification> closeToStartDate(List<ToDoItem> toDoItems);
-    List<Notification> closeToDueDate(List<ToDoItem> toDoItems);
+    Map<String, List<Notification>>closeToStartDate(User user);
+    Map<String, List<Notification>> closeToDueDate(User user);
+    String deleteNotification(User user);
+
 }

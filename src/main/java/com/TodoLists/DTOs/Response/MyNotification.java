@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 public class MyNotification {
-private List<Notification> data;
+private Map<String, List<Notification>> data;
 
 }

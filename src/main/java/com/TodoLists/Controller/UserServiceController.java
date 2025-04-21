@@ -2,6 +2,7 @@ package com.TodoLists.Controller;
 
 //import com.TodoLists.Application.DTOs.Request.*;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.TodoLists.DTOs.Request.*;
 import com.TodoLists.DTOs.Response.*;
 import com.TodoLists.Data.Model.ToDoItem;
@@ -77,8 +78,12 @@ public class UserServiceController {
     @GetMapping("/getAppPackage/{id}")
     public AppPackage getAppPackage(@PathVariable("id") int id){
         try {
+            System.out.println("id i gott is "+id);
            return todoItemService.getAppPackage(id);
         }catch (Exception e){
+            e.fillInStackTrace();
+            e.getCause();
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage()+"\n"+e.fillInStackTrace());
         }
     }
@@ -139,25 +144,17 @@ public class UserServiceController {
             return e.getMessage();
         }
     }
-    @PostMapping("/updateTitle")
-   public String updateTitle(UpdateTask updateTask) throws Exception{
-        try {
-            todoItemService.updateTitle(updateTask);
-            return "Title Updated";
+
+
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<String> forgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest){
+        try{
+            String response = userService.resetPassword(forgetPasswordRequest);
+            return ResponseEntity.ok(response);
         }catch (Exception e){
-           return e.getMessage();
+            e.fillInStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-
-    @PostMapping("/updateDescription")
-    public String updateDescription(UpdateTask updateTask) throws Exception {
-        try {
-//            userService.updateDescription(updateTask);
-            return "Description Updated";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-
     }
 
 //    @PostMapping("/markItemASComplete")
@@ -171,12 +168,12 @@ public class UserServiceController {
 //    }
 
     @PostMapping("/deleteTask")
-    public String deleteTask(int userId, int todoItemIds){
+    public ResponseEntity<String> deleteTask(int userId, int todoItemIds){
         try {
-            todoItemService.deleteTask(userId,todoItemIds);
-            return "Task Deleted";
+            String response = todoItemService.deleteTask(userId,todoItemIds);
+            return ResponseEntity.ok(response);
         }catch (Exception e){
-            return e.getMessage();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

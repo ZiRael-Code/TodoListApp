@@ -12,12 +12,11 @@ import java.util.List;
 @Service
 public interface TodoItemService {
 
-void updateTitle(UpdateTask updateTask) throws Exception ;
     MobileNavPackage markItemASComplete(int userId, int todoItemIds) throws Exception;
     void addTask(AddTaskRequest addReq) throws Exception;
     ToDoItem getTask(int taskId, int userId) throws Exception;
 
-    void deleteTask(int userId, int todoItemIds);
+    String deleteTask(int userId, int todoItemIds) throws Exception;
 
     List<ToDoItem> getAllTasks(int userId) throws Exception;
 

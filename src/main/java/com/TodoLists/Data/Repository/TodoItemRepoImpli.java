@@ -14,7 +14,6 @@ class TodoItemRepoImpli implements TodoItemRepo{
     private UserRepo userRepo;
     @Override
     public ToDoItem findTask(int taskId, int userId) throws Exception {
-        User user11 =  userRepo.findById(userId);
             List<ToDoItem> item = userRepo.findById(userId).getMyTask();
             for (ToDoItem item1: item) {
                 if (item1.getTodoItemId()==taskId){

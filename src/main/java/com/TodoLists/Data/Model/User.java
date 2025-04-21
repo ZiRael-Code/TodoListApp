@@ -8,6 +8,7 @@ import java.beans.Transient;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class User implements Serializable {
     private boolean enable = false;
     private List<ToDoItem> myTask = new ArrayList<>();
     private int currentId = -1;
-    private List<Notification> myNotification = new ArrayList<>();
+    private Map<String, List<Notification>> myNotification = new HashMap<>();
 //    @JsonDeserialize
 //    @JsonSerialize
     private List<Map<String, String>> taskCategory = new ArrayList<>();

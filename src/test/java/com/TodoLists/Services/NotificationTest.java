@@ -21,8 +21,8 @@ public class NotificationTest {
 //        System.out.println("userService.myNotifications(1) = " + userService.myNotifications(1));
 //        System.out.println(todoItemService.findByDate("2024-5-14", 1));
         List<Notification> text = new ArrayList<>();
-        List<Notification> p = (notificationServie.closeToStartDate(userService.findUserById(1).getMyTask()));
-    text.add(p.stream().iterator().next());
-        System.out.println(userService.myNotifications(1));
+//        List<Notification> p = (notificationServie.closeToStartDate(userService.findUserById(1).getMyTask()));
+//    text.add(p.stream().iterator().next());
+//        System.out.println(userService.myNotifications(1));
     }
 }
