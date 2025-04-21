@@ -92,6 +92,7 @@ public class UserServiceController {
     public void findUser(){
 
     }
+
     @GetMapping("/getMyNotification/{id}")
     public ResponseEntity<MyNotification> getMyNotification(@PathVariable("id") int id){
     try {
@@ -100,6 +101,17 @@ public class UserServiceController {
         throw new RuntimeException(e.getMessage());
     }
     }
+
+    @PostMapping("/deleteAll")
+    public String deleteAll(){
+        try{
+            userService.deleteAll();
+            return "delete successful";
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 //
 //    @GetMapping("/todayTasks/{id}")
 //    public ResponseEntity<FindTasksResponse> getTodayTask(@PathVariable("id") int id){

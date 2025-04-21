@@ -147,6 +147,10 @@ public class UserServiceImpl implements UserService {
             }
     }
 
+    @Override
+    public void deleteAll() throws Exception {
+        userRepo.deleteAll();
+    }
 
 
     public static void main(String[] args) {

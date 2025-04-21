@@ -23,4 +23,6 @@ public interface UserService {
     MyNotification myNotifications(int id) throws Exception;
 
     String resetPassword(ForgetPasswordRequest forgetPasswordRequest) throws Exception;
+
+    void deleteAll() throws Exception;
 }

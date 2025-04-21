@@ -22,28 +22,28 @@ public class TodoListsMain implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(TodoListsMain.class);
 
     // Initialize with default value
-//    public static String FILENAME = "/tmp/user_data";
-    public static String FILENAME = "C:\\Users\\Sober\\IdeaProjects\\TodoListApp\\src\\main\\java\\com\\TodoLists\\user";
+    public static String FILENAME = "/tmp/user_data";
+//    public static String FILENAME = "C:\\Users\\Sober\\IdeaProjects\\TodoListApp\\src\\main\\java\\com\\TodoLists\\user";
 
     public static void main(String[] args) {
         SpringApplication.run(TodoListsMain.class, args);
     }
 
 
-//    private static final String API_URL = "https://todolistapp-1-s2az.onrender.com/user/getMobileNavPackage/1";
-//    private final RestTemplate restTemplate = new RestTemplate();
+    private static final String API_URL = "https://todolistapp-1-s2az.onrender.com/user/getMobileNavPackage/1";
+    private final RestTemplate restTemplate = new RestTemplate();
 //
-//    @Scheduled(fixedRate = 10 * 60 * 1000)
-////    @Scheduled(fixedRate = 2 * 60 * 1000)
-//    public void callApiEvery10Minutes() {
-//        try {
-//            System.out.println("in call api meod: " + java.time.LocalDateTime.now());
-//            restTemplate.getForObject(API_URL, String.class);
-//            System.out.println("API called successfully at: " + java.time.LocalDateTime.now());
-//        } catch (Exception e) {
-//            System.err.println("Failed to call API: " + e.getMessage());
-//        }
-//    }
+    @Scheduled(fixedRate = 10 * 60 * 1000)
+//    @Scheduled(fixedRate = 2 * 60 * 1000)
+    public void callApiEvery10Minutes() {
+        try {
+            System.out.println("in call api meod: " + java.time.LocalDateTime.now());
+            restTemplate.getForObject(API_URL, String.class);
+            System.out.println("API called successfully at: " + java.time.LocalDateTime.now());
+        } catch (Exception e) {
+            System.err.println("Failed to call API: " + e.getMessage());
+        }
+    }
 
     @Override
     public void run(String... args) {
@@ -69,7 +69,7 @@ public class TodoListsMain implements CommandLineRunner {
             if (!file.canWrite()) {
                 throw new IOException("File is not writable: " + path.toAbsolutePath());
             }
-//            callApiEvery10Minutes();
+            callApiEvery10Minutes();
 
         } catch (IOException e) {
             logger.error("Failed to initialize data file", e);
